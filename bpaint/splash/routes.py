@@ -1,12 +1,18 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, render_template, url_for
 
 bp = Blueprint('splash', __name__, template_folder='templates')
+
+splash_seen = False
 
 
 @bp.route('/')
 def splash():
-    return render_template('splash/splash.html')
-
+    global splash_seen
+    if not splash_seen:
+        splash_seen = True
+        return render_template('splash/splash.html')
+    else:
+        return redirect(url_for('splash.index'))
 
 @bp.route('/index')
 def index():
