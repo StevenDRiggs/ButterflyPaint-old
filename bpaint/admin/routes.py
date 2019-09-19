@@ -5,21 +5,21 @@ bp = Blueprint('admin', __name__, static_folder='static', template_folder='templ
 
 @bp.route('/')
 def admin():
-    return render_template('index.html')
+    return render_template('admin/index.html')
 
 
 @bp.route('/db/')
 def db_home():
-    pass
+    return render_template('admin/db_home.html')
 
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add():
-    pass
+    return render_template('admin/db_add.html')
 
 @bp.route('/db/update', methods=['GET', 'POST'])
 def db_update():
-    pass
+    return render_template('admin/db_update.html')
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
-    pass
+    return render_template('admin/db_delete.html')

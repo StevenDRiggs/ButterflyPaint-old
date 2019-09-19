@@ -1,0 +1,8 @@
+from flask import Blueprint, render_template
+
+bp = Blueprint('inv', __name__, static_folder='static', template_folder='templates', url_prefix='/inv')
+
+
+@bp.route('/')
+def inv():
+    return render_template('inv/index.html')
