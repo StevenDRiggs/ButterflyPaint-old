@@ -14,7 +14,9 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
+from bpaint.models import Color
 db.create_all()
+db.session.commit()
 
 app.register_blueprint(base_bp)
 app.register_blueprint(admin_bp)
