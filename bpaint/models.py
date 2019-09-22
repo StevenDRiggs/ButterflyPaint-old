@@ -4,7 +4,7 @@ from bpaint import db
 class Color(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     medium = db.Column(db.String(2), nullable=False)
-    # color_num = db.Column(db.Integer, nullable=False)
+    color_num = db.Column(db.Integer)
     name = db.Column(db.String(50), unique=True)
     pure = db.Column(db.Boolean, default=False, nullable=False)
     recipe = db.Column(db.Text, nullable=False, unique=True)

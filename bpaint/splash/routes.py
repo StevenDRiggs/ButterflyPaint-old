@@ -9,7 +9,7 @@ splash_seen = False
 def splash():
     global splash_seen
     if not splash_seen:
-        # splash_seen = True
+        splash_seen = True
         return render_template('splash/splash.html')
     else:
         return redirect(url_for('splash.index'))
@@ -17,3 +17,9 @@ def splash():
 @bp.route('/index')
 def index():
     return render_template('splash/index.html')
+
+@bp.route('/replay')
+def replay():
+    global splash_seen
+    splash_seen = False
+    return redirect(url_for('splash.splash'))

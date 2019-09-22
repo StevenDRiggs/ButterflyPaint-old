@@ -2,6 +2,7 @@ from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 
+from bpaint.base import bp as base_bp
 from bpaint.admin.routes import bp as admin_bp
 from bpaint.inv.routes import bp as inv_bp
 from bpaint.search.routes import bp as search_bp
@@ -13,7 +14,9 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
+db.create_all()
 
+app.register_blueprint(base_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(inv_bp)
 app.register_blueprint(search_bp)

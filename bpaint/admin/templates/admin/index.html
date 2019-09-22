@@ -1,1 +1,18 @@
-<h1>Admin Home</h1>
+<style type="text/css">
+	#navbar-index {
+		display: none;
+	}
+
+	#navbar-admin {
+		display: none;
+	}
+</style>
+
+{% extends "bpaint/base.html" %}
+
+{% block navbar %}
+	{{ super() }}
+	<ul>
+		<li id="db_home"><a href="{{ url_for('admin.db_home') }}">Modify the Database</a></li>
+	</ul>
+{% endblock navbar %}
