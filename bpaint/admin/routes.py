@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template
 
+from bpaint.admin.forms import AddToDatabaseForm
+
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
 
@@ -14,6 +16,9 @@ def db_home():
 
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add():
+    form = AddToDatabaseForm()
+    if form.validate_on_submit():
+        return redirect('splash.index')
     return render_template('admin/db_add.html')
 
 @bp.route('/db/update', methods=['GET', 'POST'])

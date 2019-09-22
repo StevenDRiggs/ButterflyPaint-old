@@ -1,1 +1,5 @@
-<h1>DB Add</h1>
+{% extends 'db_home.html' %}
+
+<form action="{{ url_for('admin.db_add') }}" autocomplete="on" method="post"name="db-add">
+	Insert Form Here
+</form>
