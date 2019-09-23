@@ -15,6 +15,6 @@ class AddToDatabaseForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
     recipe = TextAreaField('recipe', validators=[DataRequired()])
-    swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest=url_for('admin.static')+'/uploads/'))])
+    # swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest='static/images/'))])
 
     submit = SubmitField('submit')

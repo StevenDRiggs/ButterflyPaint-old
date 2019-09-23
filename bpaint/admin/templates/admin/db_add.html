@@ -1,5 +1,13 @@
-{% extends 'db_home.html' %}
-
 <form action="{{ url_for('admin.db_add') }}" autocomplete="on" method="post"name="db-add">
-	Insert Form Here
+  {% for field in form if field.name != 'csrf_token' %}
+    <div>
+      {{ field.label() }}
+      {{ field() }}
+      {% for error in field.errors %}
+        <div class="error">{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endfor %}
 </form>
+
+{% extends 'admin/db_home.html' %}

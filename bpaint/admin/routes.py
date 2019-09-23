@@ -19,7 +19,7 @@ def db_add():
     form = AddToDatabaseForm()
     if form.validate_on_submit():
         return redirect('splash.index')
-    return render_template('admin/db_add.html')
+    return render_template('admin/db_add.html', form=form)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
 def db_update():
