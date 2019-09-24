@@ -6,12 +6,12 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 
 from wtforms.fields import BooleanField, IntegerField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Optional
 
 
 class AddToDatabaseForm(FlaskForm):
     medium = StringField('medium', validators=[DataRequired(), Length(min=2, max=2)])
-    color_num = IntegerField('color-num')
+    color_num = IntegerField('color-num', validators=[Optional()])
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
     recipe = TextAreaField('recipe', validators=[DataRequired()])

@@ -2,8 +2,8 @@
   <link rel="stylesheet" type="text/css" src="{{ url_for('static', filename='css/base.css') }}">
 </head>
 
-<nav class="navbar">
-  {% block navbar %}
+{% block navbar %}
+  <nav class="navbar">
     <ul id="navbar-index">
       <li><a href="{{ url_for('splash.replay') }}">Replay animation?</a></li>
     </ul>
@@ -14,7 +14,21 @@
       <li id="navbar-text"><a href="{{ url_for('text_search.text_search') }}">Text Search</a></li>
       <li id="navbar-pic"><a href="{{ url_for('pic_search.pic_search') }}">Image Search</a></li>
     </ul>
-  {% endblock navbar %}
-</nav>
+  </nav>
+{% endblock navbar %}
 
-<script src="{{ url_for('static', filename='javascript/move_nav.js') }}"></script>
+{% block flashed_messages %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div id="messages">
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+{% endblock flashed_messages %}
+
+{% block main_content %}{% endblock main_content %}

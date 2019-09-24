@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from bpaint.admin.forms import AddToDatabaseForm
 
@@ -17,8 +17,17 @@ def db_home():
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add():
     form = AddToDatabaseForm()
-    if form.validate_on_submit():
-        return redirect('splash.index')
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            from bpaint import db
+            from bpaint.models import Color
+            color = Color(medium=form.data['medium'], color_num=form.data['color_num'], name=form.data['name'], pure=form.data['pure'], recipe=form.data['recipe'])
+            db.session.add(color)
+            db.session.commit()
+            flash('Success!')
+            return redirect(url_for('admin.db_add'))
+        else:
+            return form.errors
     return render_template('admin/db_add.html', form=form)
 
 @bp.route('/db/update', methods=['GET', 'POST'])

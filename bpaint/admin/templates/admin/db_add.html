@@ -1,13 +1,18 @@
-<form action="{{ url_for('admin.db_add') }}" autocomplete="on" method="post"name="db-add">
-  {% for field in form if field.name != 'csrf_token' %}
-    <div>
-      {{ field.label() }}
-      {{ field() }}
-      {% for error in field.errors %}
-        <div class="error">{{ error }}</div>
-      {% endfor %}
-    </div>
-  {% endfor %}
-</form>
-
 {% extends 'admin/db_home.html' %}
+
+{% block main_content %}
+  <form action="" autocomplete="on" method="post" name="db-add">
+    <div hidden>
+      {{ form.csrf_token }}
+    </div>
+    {% for field in form if field.name != 'csrf_token' %}
+      <div>
+        {{ field.label() }}
+        {{ field() }}
+        {% for error in field.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </form>
+{% endblock main_content %}
