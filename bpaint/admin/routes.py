@@ -21,7 +21,10 @@ def db_add():
         if form.validate_on_submit():
             from bpaint import db
             from bpaint.models import Color
-            color = Color(medium=form.data['medium'], color_num=form.data['color_num'], name=form.data['name'], pure=form.data['pure'], recipe=form.data['recipe'])
+            record = form.data
+            record.pop('csrf_token')
+            record.pop('submit')
+            color = Color(**record)
             db.session.add(color)
             db.session.commit()
             flash('Success!')
@@ -37,3 +40,11 @@ def db_update():
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
     return render_template('admin/db_delete.html')
+
+@bp.route('/db/<string:next_action>/db_fetch', methods=['GET', 'POST'])
+def db_fetch(next_action):
+    if request.method == 'POST':
+        return request.data
+    from bpaint.models import Color
+    records_all = Color.query.all()
+    return render_template('admin/db_fetch.html', records=records_all, next_action=next_action)
