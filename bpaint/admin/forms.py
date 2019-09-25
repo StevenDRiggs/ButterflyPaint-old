@@ -5,8 +5,8 @@ from flask_uploads import IMAGES, UploadSet
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 
-from wtforms.fields import BooleanField, IntegerField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.fields import BooleanField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, InputRequired, Length, Optional
 
 
 class AddToDatabaseForm(FlaskForm):
@@ -18,3 +18,11 @@ class AddToDatabaseForm(FlaskForm):
     # swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest='static/images/'))])
 
     submit = SubmitField('submit')
+
+
+class UpdateForm(AddToDatabaseForm):
+    update = RadioField('update', validators=[InputRequired()])
+
+
+class DeleteForm(AddToDatabaseForm):
+    delete = SelectField('delete', validators=[InputRequired()])

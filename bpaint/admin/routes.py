@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from bpaint.admin.forms import AddToDatabaseForm
+from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
 
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
@@ -33,9 +33,38 @@ def db_add():
             return form.errors
     return render_template('admin/db_add.html', form=form)
 
+def load_db():
+    from bpaint.models import Color
+    form = AddToDatabaseForm()
+    records_all = Color.query.all()
+    return records_all
+
 @bp.route('/db/update', methods=['GET', 'POST'])
-def db_update():
-    return render_template('admin/db_update.html')
+def db_update(rec_id=None):
+    if request.method == 'POST':
+        if request.form.get('update'):
+            from bpaint import db
+            from bpaint.models import Color
+            data = dict(request.form)
+            data.pop('csrf_token')
+            data.pop('submit')
+            record = data.pop('update')
+            db_rec = Color.query.filter_by(id=record).first()
+            for k, v in data.items():
+                setattr(db_rec, k, v)
+            db.session.add(db_rec)
+            db.session.commit()
+            flash('Update Successful!')
+            return redirect(url_for('admin.db_update'))
+        else:
+            flash('Please choose a record to update.')
+            return redirect(url_for('admin.db_update'))
+    records = load_db()
+    form = UpdateForm()
+    form.update.choices = []
+    for record in records:
+        form.update.choices.append((record.id, record.name))
+    return render_template('admin/db_update.html', form=form)
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
@@ -43,8 +72,7 @@ def db_delete():
 
 @bp.route('/db/<string:next_action>/db_fetch', methods=['GET', 'POST'])
 def db_fetch(next_action):
-    if request.method == 'POST':
-        return request.data
     from bpaint.models import Color
+    form = AddToDatabaseForm()
     records_all = Color.query.all()
-    return render_template('admin/db_fetch.html', records=records_all, next_action=next_action)
+    return render_template('admin/db_fetch.html', records=records_all, next_action=next_action, form=form)
