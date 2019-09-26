@@ -1,1 +1,7 @@
 {% extends 'admin/db_add.html' %}
+
+{% block main_content %}
+  {{ form.delete.label() }}
+  {{ form.delete }}
+  <input type="button" value="Submit" onClick="{{ url_for('admin.static', filename='javascript/delete_confirm.js') }}" />
+{% endblock main_content %}

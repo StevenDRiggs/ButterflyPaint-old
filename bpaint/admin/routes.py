@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
 from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
 
@@ -45,12 +45,12 @@ def db_update(rec_id=None):
         if request.form.get('update'):
             from bpaint import db
             from bpaint.models import Color
-            data = dict(request.form)
-            data.pop('csrf_token')
-            data.pop('submit')
-            record = data.pop('update')
+            formdata = dict(request.form)
+            formdata.pop('csrf_token')
+            formdata.pop('submit')
+            record = formdata.pop('update')
             db_rec = Color.query.filter_by(id=record).first()
-            for k, v in data.items():
+            for k, v in formdata.items():
                 setattr(db_rec, k, v)
             db.session.add(db_rec)
             db.session.commit()
@@ -68,9 +68,27 @@ def db_update(rec_id=None):
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
-    return render_template('admin/db_delete.html')
+    if request.method == 'POST':
+        if request.form.get('delete'):
+            from bpaint import db
+            from bpaint.models import Color
+            record = request.form['delete']
+            db_rec = Color.query.filter_by(id=record).first()
+            db.session.delete(db_rec)
+            db.session.commit()
+            flash('Delete Successful!')
+            return redirect(url_for('admin.db_delete'))
+        else:
+            flash('Please choose a record to delete.')
+            return redirect(url_for('admin.db_delete'))
+    records = load_db()
+    form = DeleteForm()
+    form.delete.choices = []
+    for record in records:
+        form.delete.choices.append((record.id, record.name))
+    return render_template('admin/db_delete.html', form=form)
 
-@bp.route('/db/<string:next_action>/db_fetch', methods=['GET', 'POST'])
+@bp.route('/db/<string:next_action>/db_fetch')
 def db_fetch(next_action):
     from bpaint.models import Color
     form = AddToDatabaseForm()

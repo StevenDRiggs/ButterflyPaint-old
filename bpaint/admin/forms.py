@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 
 from wtforms.fields import BooleanField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, InputRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional
 
 
 class AddToDatabaseForm(FlaskForm):
@@ -15,14 +15,15 @@ class AddToDatabaseForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
     recipe = TextAreaField('recipe', validators=[DataRequired()])
-    # swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest='static/images/'))])
+    swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest='static/images/'))])
 
     submit = SubmitField('submit')
 
 
 class UpdateForm(AddToDatabaseForm):
-    update = RadioField('update', validators=[InputRequired()])
+    update = SelectField('', validators=[DataRequired()])
+    submit = SubmitField('submit')
 
 
-class DeleteForm(AddToDatabaseForm):
-    delete = SelectField('delete', validators=[InputRequired()])
+class DeleteForm(FlaskForm):
+    delete = SelectField('delete', validators=[DataRequired()])
