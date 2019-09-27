@@ -1,12 +1,12 @@
 from flask import url_for
 
-from flask_uploads import IMAGES, UploadSet
-
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 
 from wtforms.fields import BooleanField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Optional
+
+from bpaint import uploads
 
 
 class AddToDatabaseForm(FlaskForm):
@@ -15,7 +15,7 @@ class AddToDatabaseForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
     recipe = TextAreaField('recipe', validators=[DataRequired()])
-    swatch = FileField('swatch', validators=[DataRequired(), FileAllowed(UploadSet(name='pics', extensions=IMAGES, default_dest='static/images/'))])
+    swatch = FileField('swatch', validators=[FileAllowed(uploads)])
 
     submit = SubmitField('submit')
 

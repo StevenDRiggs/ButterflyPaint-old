@@ -22,6 +22,10 @@ def db_add():
             from bpaint import db
             from bpaint.models import Color
             record = form.data
+            files = []
+            for file in request.files:
+                files.append(file)
+            return str(files)
             record.pop('csrf_token')
             record.pop('submit')
             color = Color(**record)
@@ -30,7 +34,7 @@ def db_add():
             flash('Success!')
             return redirect(url_for('admin.db_add'))
         else:
-            return form.errors
+            return 'Error:\n' + str(form.errors)
     return render_template('admin/db_add.html', form=form)
 
 def load_db():

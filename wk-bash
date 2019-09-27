@@ -1,0 +1,63 @@
+HOME='/c/Users/riggss2/Dropbox/programming'
+
+alias pycdel='find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf'
+
+alias py='winpty python'
+alias python='py'
+alias py_print='winpty -Xallow-non-tty python'
+
+alias cp-reqs='py ~/my_py_tools/cp-reqs.py ${PWD}'
+
+alias ac='source ./wkenv/Scripts/activate'
+alias deac='deactivate'
+
+alias jpn='jupyter notebook'
+
+alias dja='django-admin'
+alias runs='py manage.py runserver'
+
+alias ep='echo $PATH | tr ":" "\n"'
+alias lsr='ls -R -I*env -I__pycache__ -I*.pyc'
+
+alias newpage="mkdir css images
+touch index.html css/style.css
+echo '<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=\"utf-8\">
+		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+		<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\">
+		<link rel=\"shortcut icon\" type=\"image/png\" href=\"favicon.ico\">
+		<title>
+
+		</title>
+	</head>
+
+	<body>
+		<nav>
+
+		</nav>
+
+		<header>
+
+		</header>
+
+		<main>
+
+		</main>
+
+		<footer>
+
+		</footer>
+	</body>
+</html>' > index.html
+echo '* {
+	margin: 0;
+	padding: 0;
+}' > css/style.css"
+
+alias flaskdev='export FLASK_APP=flaskr
+export FLASK_ENV=development
+py -m flask run'
+
+cd ~

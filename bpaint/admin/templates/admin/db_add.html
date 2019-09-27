@@ -1,7 +1,7 @@
 {% extends 'admin/db_home.html' %}
 
 {% block main_content %}
-  <form action="" autocomplete="on" method="post" name="db-add">
+  <form action="" autocomplete="on" method="post" name="db-add" enctype="multipart/form-data">
     <div hidden>
       {{ form.csrf_token }}
     </div>
