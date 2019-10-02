@@ -11,7 +11,6 @@ from bpaint import uploads
 
 class AddToDatabaseForm(FlaskForm):
     medium = StringField('medium', validators=[DataRequired(), Length(min=2, max=2)])
-    color_num = IntegerField('color-num', validators=[Optional()])
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
     recipe = TextAreaField('recipe', validators=[DataRequired()])
