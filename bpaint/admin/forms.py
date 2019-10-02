@@ -21,9 +21,9 @@ class AddToDatabaseForm(FlaskForm):
 
 
 class UpdateForm(AddToDatabaseForm):
-    update = SelectField('', validators=[DataRequired()])
+    update = SelectField('')
     submit = SubmitField('submit')
 
 
 class DeleteForm(FlaskForm):
-    delete = SelectField('delete', validators=[DataRequired()])
+    delete = SelectField('delete')
