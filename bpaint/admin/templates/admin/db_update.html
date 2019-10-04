@@ -1,1 +1,6 @@
 {% extends 'admin/db_add.html' %}
+
+{% block main_content %}
+  {{ super() }}
+  <script src="{{ url_for('admin.static', filename='javascript/update.js') }}"></script>
+{% endblock main_content %}
