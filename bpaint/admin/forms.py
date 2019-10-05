@@ -13,7 +13,7 @@ class AddToDatabaseForm(FlaskForm):
     medium = RadioField('medium', choices=[('OA', 'Oil/Acrylic')])
     name = StringField('name', validators=[DataRequired(), Length(max=40)])
     pure = BooleanField('pure')
-    recipe = SelectMultipleField('')
+    recipe = SelectMultipleField('recipe')
     swatch = FileField('swatch', validators=[FileAllowed(uploads)])
 
     submit = SubmitField('submit')

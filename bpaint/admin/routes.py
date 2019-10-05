@@ -2,8 +2,6 @@ import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from random import getrandbits
-
 from werkzeug.utils import secure_filename
 
 from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
@@ -40,12 +38,12 @@ def db_add():
             from bpaint.models import Color
             formdata = form.data
             image = formdata.pop('swatch')
-            image.filename = str(getrandbits(16)) + secure_filename(image.filename)
+            image.filename = secure_filename(image.filename)
             with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
             formdata.pop('csrf_token')
             formdata.pop('submit')
-            formdata['swatch'] = os.path.join(url_for('base.static', filename=f'images/{image.filename}'))
+            formdata['swatch'] = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
             formdata['recipe'] = '|'.join(formdata.get('recipe', []))
             color = Color(**formdata)
             db.session.add(color)
@@ -70,29 +68,32 @@ def db_update(rec_id=None):
     if not form.recipe.choices:
         return render_template('admin/db_no_update.html')
     if request.method == 'POST':
-        if form.validate_on_submit():
+        # if form.validate_on_submit():
             from bpaint import app, db, uploads
             from bpaint.models import Color
             formdata = form.data
+            record = Color.query.filter_by(id=formdata.pop('update')).first()
+            os.remove(record.swatch)
             image = formdata.pop('swatch')
-            image.filename = str(getrandbits(16)) + secure_filename(image.filename)
+            image.filename = secure_filename(image.filename)
             with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
             formdata.pop('csrf_token')
             formdata.pop('submit')
             formdata['swatch'] = os.path.join(url_for('base.static', filename=f'images/{image.filename}'))
             formdata['recipe'] = '|'.join(formdata.get('recipe', []))
-            color = Color(**formdata)
-            db.session.add(color)
+            for k, v in formdata.items():
+                setattr(record, k, v)
+            db.session.add(record)
             db.session.commit()
-            if not color.recipe:
-                color.recipe = str(color.id)
-                db.session.add(color)
+            if not record.recipe:
+                record.recipe = str(record.id)
+                db.session.add(record)
                 db.session.commit()
             flash(f"{formdata['name']} successfully updated!")
             return redirect(url_for('admin.db_update'))
-        else:
-            return 'Error:\n' + str(form.errors)
+        # else:
+        #     return 'Error:\n' + str(form.errors)
     form.update.choices = form.recipe.choices
     return render_template('admin/db_update.html', form=form)
 
