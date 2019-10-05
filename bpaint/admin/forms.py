@@ -15,7 +15,6 @@ class AddToDatabaseForm(FlaskForm):
     pure = BooleanField('pure')
     recipe = SelectMultipleField('recipe')
     swatch = FileField('swatch', validators=[FileAllowed(uploads)])
-
     submit = SubmitField('submit')
 
 
@@ -25,4 +24,5 @@ class UpdateForm(AddToDatabaseForm):
 
 
 class DeleteForm(FlaskForm):
-    delete = SelectField('delete')
+    delete = RadioField('delete')
+    submit = SubmitField('submit')

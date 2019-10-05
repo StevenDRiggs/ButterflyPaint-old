@@ -100,26 +100,29 @@ def db_update(rec_id=None):
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
     form = DeleteForm()
+    records = load_db()
+    form.delete.choices = []
+    for record in records:
+        form.delete.choices.append((record.id, record.name))
+    if not form.delete.choices:
+        return render_template('admin/db_no_delete.html')
     if request.method == 'POST':
-        if form.validate_on_submit():
+        # if form.validate_on_submit():
             if request.form.get('delete'):
                 from bpaint import db
                 from bpaint.models import Color
-                record = request.form['delete']
-                db_rec = Color.query.filter_by(id=record).first()
-                db.session.delete(db_rec)
+                formdata = form.data
+                record = Color.query.filter_by(id=formdata['delete']).first()
+                os.remove(record.swatch)
+                db.session.delete(record)
                 db.session.commit()
                 flash('Delete Successful!')
                 return redirect(url_for('admin.db_delete'))
             else:
                 flash('Please choose a record to delete.')
                 return redirect(url_for('admin.db_delete'))
-        else:
-            return 'Error:\n' + str(form.errors)
-    records = load_db()
-    form.delete.choices = []
-    for record in records:
-        form.delete.choices.append((record.id, record.name))
+        # else:
+        #     return 'Error:\n' + str(form.errors)
     return render_template('admin/db_delete.html', form=form)
 
 @bp.route('/db/<string:next_action>/db_fetch')
