@@ -59,7 +59,8 @@ def db_add():
     return render_template('admin/db_add.html', form=form)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
-def db_update(rec_id=None):
+def db_update():
+    from bpaint.models import Color
     form = UpdateForm()
     records = load_db()
     form.recipe.choices = []
@@ -70,7 +71,6 @@ def db_update(rec_id=None):
     if request.method == 'POST':
         # if form.validate_on_submit():
             from bpaint import app, db, uploads
-            from bpaint.models import Color
             formdata = form.data
             record = Color.query.filter_by(id=formdata.pop('update')).first()
             os.remove(record.swatch)
@@ -95,7 +95,12 @@ def db_update(rec_id=None):
         # else:
         #     return 'Error:\n' + str(form.errors)
     form.update.choices = form.recipe.choices
-    return render_template('admin/db_update.html', form=form)
+    rec_id = request.args.get('rec_id')
+    if rec_id:
+        record = Color.query.filter_by(id=rec_id).first().__dict__
+    else:
+        record = None
+    return render_template('admin/db_update.html', form=form, rec_id=rec_id, record=record)
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():

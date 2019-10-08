@@ -2,5 +2,12 @@
 
 {% block main_content %}
   {{ super() }}
+  {# {% if record %} #}
+    <div>rec_id: {{ rec_id }}</div>
+    <div>record: {{ record }}</div>
+    {% for k, v in record %}
+      <script>{{ form[k] }}.value = "{{ v }}"</script>
+      {% endfor %}
+    {# {% endif %} #}
   <script src="{{ url_for('admin.static', filename='javascript/update.js') }}"></script>
 {% endblock main_content %}
