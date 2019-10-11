@@ -39,6 +39,7 @@ def db_add():
             formdata = form.data
             image = formdata.pop('swatch')
             image.filename = secure_filename(image.filename)
+            image.resize((200, 200))
             with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
             formdata.pop('csrf_token')
@@ -76,6 +77,7 @@ def db_update():
             os.remove(record.swatch)
             image = formdata.pop('swatch')
             image.filename = secure_filename(image.filename)
+            image.resize((200, 200))
             with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
             formdata.pop('csrf_token')
