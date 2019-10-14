@@ -11,7 +11,7 @@ app.config.from_object(Config)
 
 uploads = UploadSet(name='images', extensions=app.config['ALLOWED_FILES'], default_dest=lambda _: '/static/images')
 configure_uploads(app, uploads)
-patch_request_class(app, 5 * 1024 * 1024)
+patch_request_class(app, 10 * 1024 * 1024)
 
 db = SQLAlchemy(app)
 from bpaint.models import Color

@@ -2,6 +2,10 @@ import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from PIL import Image, ImageFile
+
+# from sqlalchemy import in_
+
 from werkzeug.utils import secure_filename
 
 from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
@@ -30,33 +34,40 @@ def db_add():
     form.recipe.choices = []
     for record in records:
         form.recipe.choices.append((record.id, record.name))
-    if not form.recipe.choices:
+    if not form.recipe.choices or len(form.recipe.choices) < 2:
         del form.recipe
     if request.method == 'POST':
-        if form.validate_on_submit():
+        # if form.validate_on_submit():
             from bpaint import app, db, uploads
             from bpaint.models import Color
             formdata = form.data
-            image = formdata.pop('swatch')
-            image.filename = secure_filename(image.filename)
-            image.resize((200, 200))
-            with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
+            image_file = formdata.pop('swatch')
+            image_file.filename = secure_filename(image_file.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+            with open(image_path, 'w'):
+                image_file.save(image_path)
+            ImageFile.LOAD_TRUNCATED_IMAGE = True
+            with Image.open(image_path) as image:
+                image = image.resize((200, 200))
+                image.save(image_path)
             formdata.pop('csrf_token')
             formdata.pop('submit')
-            formdata['swatch'] = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
-            formdata['recipe'] = '|'.join(formdata.get('recipe', []))
+            formdata['swatch'] = image_path
+            formdata['recipe'] = formdata.get('recipe', [])
+            if formdata['recipe']:
+                colors = tuple([id for id in formdata['recipe']])
+                formdata['recipe'] = Color.query.filter(Color.id.in_(colors)).all()
             color = Color(**formdata)
             db.session.add(color)
             db.session.commit()
             if not color.recipe:
-                color.recipe = str(color.id)
+                color.recipe = [color]
                 db.session.add(color)
                 db.session.commit()
             flash(f"{formdata['name']} successfully added!")
             return redirect(url_for('admin.db_add'))
-        else:
-            return 'Error:\n' + str(form.errors)
+        # else:
+        #     return 'Error:\n' + str(form.errors)
     return render_template('admin/db_add.html', form=form)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
