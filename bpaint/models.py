@@ -2,8 +2,8 @@ from bpaint import db
 
 
 link = db.Table(
-    db.Column('color_id', db.Integer, db.ForeignKey('color.id'), primary_key=True),
-    db.Column('recipe_id', db.Integer, db.ForeignKey('color.id'), primary_key=True),
+    db.Column('color_id', db.Integer, db.ForeignKey('color.id')),
+    db.Column('recipe_id', db.Integer, db.ForeignKey('color.id')),
     db.Column('quantity', db.Integer)
 )
 
