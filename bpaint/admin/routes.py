@@ -55,16 +55,18 @@ def db_add():
             formdata['swatch'] = image_path
             formdata['recipe'] = formdata.get('recipe', [])
             if formdata['recipe']:
-                colors = tuple([id for id in formdata['recipe']])
+                colors = tuple([int(id) for id in formdata['recipe']])
                 formdata['recipe'] = Color.query.filter(Color.id.in_(colors)).all()
             color = Color(**formdata)
-            db.session.add(color)
-            db.session.commit()
+            flash('color.recipe before if: ' + str(color.recipe))
             if not color.recipe:
                 color.recipe = [color]
-                db.session.add(color)
-                db.session.commit()
+            flash('color.recipe after if: ' + str(color.recipe))
+            db.session.add(color)
+            flash('color.recipe before commit: ' + str(color.recipe))
+            db.session.commit()
             flash(f"{formdata['name']} successfully added!")
+            flash('color.recipe after commit: ' + str(color.recipe))
             return redirect(url_for('admin.db_add'))
         # else:
         #     return 'Error:\n' + str(form.errors)

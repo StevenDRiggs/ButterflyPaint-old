@@ -13,7 +13,7 @@ class Color(db.Model):
     medium = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(50), nullable=False, unique=True)
     pure = db.Column(db.Boolean, default=False, nullable=False)
-    recipe = db.relationship('Color', secondary=link)
+    recipe = db.relationship('Color', secondary=link, lazy=False)
     swatch = db.Column(db.String(25), nullable=False, unique=True)
 
     def __repr__(self):
