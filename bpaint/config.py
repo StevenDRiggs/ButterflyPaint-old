@@ -8,3 +8,4 @@ class Config(object):
     SECRET_KEY = 'dev'
     ALLOWED_FILES = IMAGES
     UPLOAD_FOLDER = os.path.abspath('./bpaint/static/images')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
