@@ -14,7 +14,7 @@ configure_uploads(app, uploads)
 patch_request_class(app, 10 * 1024 * 1024)
 
 db = SQLAlchemy(app=app, session_options={'expire_on_commit':False})
-from bpaint.models import Color
+from bpaint.models import Color, Recipe
 db.create_all()
 db.session.commit()
 
