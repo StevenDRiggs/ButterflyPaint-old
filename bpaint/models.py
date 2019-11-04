@@ -4,8 +4,10 @@ from bpaint import db
 
 
 class Recipe(db.Model):
-    base_id = db.Column(db.Integer, db.ForeignKey('color.id'), primary_key=True)
-    ingredients = db.relationship('Color')
+    id = db.Column(db.Integer, primary_key=True)
+    base_id = db.Column(db.Integer, db.ForeignKey('color.id'))
+    ingredients = db.relationship('Color',
+            cascade='save-update')
     quantity = db.Column(db.Integer)
 
     def __init__(self, ingredient, quantity):

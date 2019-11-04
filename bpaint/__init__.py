@@ -4,10 +4,20 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flask_uploads import configure_uploads, patch_request_class, UploadSet
 
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+
 from bpaint.config import Config
+
+@event.listens_for(Engine, 'connect')
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute('PRAGMA foreign_keys=ON')
+    cursor.close()
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['SQLALCHEMY_ECHO'] = True
 
 uploads = UploadSet(name='images', extensions=app.config['ALLOWED_FILES'], default_dest=lambda _: '/static/images')
 configure_uploads(app, uploads)
