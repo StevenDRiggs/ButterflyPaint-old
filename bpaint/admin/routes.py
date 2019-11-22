@@ -37,7 +37,7 @@ def db_add():
     if not form.recipe.choices or len(form.recipe.choices) < 2:
         del form.recipe
     if request.method == 'POST':
-        # if form.validate_on_submit():
+        if form.validate_on_submit():
             from bpaint import app, db, uploads
             from bpaint.models import Color
             formdata = form.data
@@ -53,23 +53,19 @@ def db_add():
             formdata.pop('csrf_token')
             formdata.pop('submit')
             formdata['swatch'] = image_path
-            formdata['recipe'] = formdata.get('recipe', [])
+            formdata['recipe'] = formdata.get('recipe')
             if formdata['recipe']:
+                return f"{formdata['recipe']=}"
                 colors = tuple([int(id) for id in formdata['recipe']])
                 formdata['recipe'] = Color.query.filter(Color.id.in_(colors)).all()
+            else:
+                del formdata['recipe']
             color = Color(**formdata)
-            flash('color.recipe before if: ' + str(color.recipe))
-            if not color.recipe:
-                color.recipe = [color]
-            flash('color.recipe after if: ' + str(color.recipe))
-            db.session.add(color)
-            flash('color.recipe before commit: ' + str(color.recipe))
+            db.session.add_all([color, *color.recipe])
             db.session.commit()
-            flash(f"{formdata['name']} successfully added!")
-            flash('color.recipe after commit: ' + str(color.recipe))
             return redirect(url_for('admin.db_add'))
-        # else:
-        #     return 'Error:\n' + str(form.errors)
+        else:
+            return 'Error:\n' + str(form.errors)
     return render_template('admin/db_add.html', form=form)
 
 @bp.route('/db/update', methods=['GET', 'POST'])

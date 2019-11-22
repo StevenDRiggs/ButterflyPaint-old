@@ -17,7 +17,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['SQLALCHEMY_ECHO'] = True
 
 uploads = UploadSet(name='images', extensions=app.config['ALLOWED_FILES'], default_dest=lambda _: '/static/images')
 configure_uploads(app, uploads)

@@ -12,7 +12,7 @@ from bpaint import uploads
 
 class AddToDatabaseForm(FlaskForm):
     medium = RadioField('medium', choices=[('OA', 'Oil/Acrylic')])
-    name = StringField('name', validators=[DataRequired(), Length(max=40)])
+    name = StringField('name', validators=[DataRequired(), Length(max=50)])
     pure = BooleanField('pure')
     recipe = SelectMultipleField('recipe', widget=widgets.ListWidget(prefix_label=False), option_widget=widgets.CheckboxInput())
     swatch = FileField('swatch', validators=[FileAllowed(uploads)])
