@@ -31,11 +31,11 @@ def load_db():
 def db_add():
     form = AddToDatabaseForm()
     records = load_db()
-    form.recipe.choices = []
+    recipe = []
     for record in records:
-        form.recipe.choices.append((record.id, record.name))
-    if not form.recipe.choices or len(form.recipe.choices) < 2:
-        del form.recipe
+        recipe.append((record.id, record.name))
+    if len(recipe) < 2:
+        recipe = []
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
@@ -66,7 +66,7 @@ def db_add():
             return redirect(url_for('admin.db_add'))
         else:
             return 'Error:\n' + str(form.errors)
-    return render_template('admin/db_add.html', form=form)
+    return render_template('admin/db_add.html', form=form, recipe=recipe)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
 def db_update():

@@ -2,6 +2,14 @@ import os
 
 from flask_uploads import IMAGES
 
+medium_choices = [
+        ('OA', 'Oil/Acrylic'),
+        ('WC', 'Watercolor'),
+        ('DR', 'Digital (RGB)'),
+        ('DC', 'Digital (CMYK)'),
+        ('DH', 'Digital (HSL)'),
+        ]
+
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///bpaint.sqlite'

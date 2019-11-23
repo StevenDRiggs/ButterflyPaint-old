@@ -15,5 +15,17 @@
       </div>
     {% endfor %}
   </form>
+  {% if recipe %}
+    <div id="recipe">
+      {% for id, name in recipe %}
+        <div id="{{ id }}" hidden></div>
+	<label for="recipe-{{ id }}">{{ name }}</label>
+	<input class="recipe-ingredient-quantity" name="recipe-{{ id }}" type="number" value="0">
+      {% endfor %}
+    </div>
+    <script src="{{ url_for('admin.static', filename='javascript/recipe.js') }}"></script>
+  {% else %}
+    <script src="{{ url_for('admin.static', filename='javascript/no_recipe.js') }}"></script>
+  {% endif %}
   <script src="{{ url_for('admin.static', filename='javascript/admin.js') }}"></script>
 {% endblock main_content %}
