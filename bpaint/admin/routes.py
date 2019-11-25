@@ -41,6 +41,7 @@ def db_add():
             from bpaint import app, db, uploads
             from bpaint.models import Color
             formdata = form.data
+            print(f'\n{formdata=}\n')
             image_file = formdata.pop('swatch')
             image_file.filename = secure_filename(image_file.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)

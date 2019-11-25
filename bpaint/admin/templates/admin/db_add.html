@@ -17,16 +17,15 @@
     {% if recipe %}
       <div id="recipe">
         {% for id, name, swatch in recipe %}
-          <div id="{{ id }}" hidden></div>
-          <label for="recipe-{{ id }}">{{ name }}</label>
-  	  <img src="{{ swatch }}" alt="{{ swatch }}">
-          <input class="recipe-ingredient-quantity" name="recipe-{{ id }}" type="number" value="0">
+          {{ form[f'{id}'] = {{ f'{id}'|IntegerField }}
+          {{ form[f'{id}'].label() }}
+  	      <img src="{{ swatch }}" alt="{{ swatch }}">
+          {{ form[f'{id}']() }}
         {% endfor %}
+        {{ form['submit'].label() }}
+        {{ form['submit']() }}
       </div>
     {% endif %}
-    {{ form['submit'].label }}
-    {{ form['submit'] }}
-    <script src="{{ url_for('admin.static', filename='javascript/recipe.js') }}"></script>
   </form>
-  <!-- <script src="{{ url_for('admin.static', filename='javascript/admin.js') }}"></script> -->
+  <script src="{{ url_for('admin.static', filename='javascript/recipe.js') }}"></script>
 {% endblock main_content %}

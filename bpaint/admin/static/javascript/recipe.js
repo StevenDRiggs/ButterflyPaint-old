@@ -4,15 +4,16 @@ let recipe = document.getElementById("recipe");
 function ifChecked() {
 	if (recipe) {
 		if (pure.checked) {
-			recipe.disabled = true;
+			recipe.hidden = true;
 		} else {
-			recipe.disabled = false;
+			recipe.hidden = false;
 		}
 	}
+}
 
-if (recipe) {
-	pure.onclick = function() {ifChecked};
-} else {
+pure.onclick = function() {ifChecked()};
+
+if (!recipe) {
 	let hidden_pure = document.createElement("select");
 	hidden_pure.hidden = true;
 	hidden_pure.name = "pure";
