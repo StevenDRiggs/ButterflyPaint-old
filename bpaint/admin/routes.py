@@ -33,7 +33,7 @@ def db_add():
     records = load_db()
     recipe = []
     for record in records:
-        recipe.append((record.id, record.name))
+        recipe.append((record.id, record.name, record.swatch))
     if len(recipe) < 2:
         recipe = []
     if request.method == 'POST':
@@ -52,7 +52,7 @@ def db_add():
                 image.save(image_path)
             formdata.pop('csrf_token')
             formdata.pop('submit')
-            formdata['swatch'] = image_path
+            formdata['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
             formdata['recipe'] = formdata.get('recipe')
             if formdata['recipe']:
                 return f"{formdata['recipe']=}"
