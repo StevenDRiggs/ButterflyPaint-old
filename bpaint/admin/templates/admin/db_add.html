@@ -6,12 +6,18 @@
       {{ form.csrf_token }}
     </div>
     {% for field in form if field.name != 'csrf_token' %}
-      <div>
-        {{ field.label() }}
         {% if field.label.text in images.keys() %}
-          <img src="{{ images[field.label.text] }}" alt="{{ field.label.text }}">
+          <div class="recipe">
+            {{ field.label() }}
+            <img src="{{ images[field.label.text] }}" alt="{{ field.label.text }}">
+            {{ field() }}
+          </div>
+        {% else %}
+          <div>
+            {{ field.label() }}
+            {{ field() }}
+          </div>
         {% endif %}
-        {{ field() }}
         {% for error in field.errors %}
           <div class="error">{{ error }}</div>
         {% endfor %}

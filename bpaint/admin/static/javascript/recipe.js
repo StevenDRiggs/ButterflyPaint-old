@@ -1,12 +1,18 @@
 let pure = document.getElementById("pure");
-let recipe = document.getElementById("recipe");
+let recipe = document.getElementsByClassName("recipe");
 
 function ifChecked() {
 	if (recipe) {
-		if (pure.checked) {
-			recipe.hidden = true;
-		} else {
-			recipe.hidden = false;
+		for (let i = 0; i < recipe.length; i++) {
+			if (pure.checked) {
+				recipe[i].hidden = true;
+				document.querySelector("label[for='submit2']").hidden = true;
+				document.getElementById('submit2').hidden = true;
+			} else {
+				recipe[i].hidden = false;
+				document.querySelector("label[for='submit2']").hidden = false;
+				document.getElementById('submit2').hidden = false;
+			}
 		}
 	}
 }

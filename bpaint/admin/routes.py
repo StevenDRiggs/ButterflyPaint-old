@@ -6,7 +6,7 @@ from PIL import Image, ImageFile
 
 from werkzeug.utils import secure_filename
 
-from wtforms import IntegerField
+from wtforms import IntegerField, SubmitField
 
 from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
 
@@ -41,6 +41,7 @@ def db_add():
         for record in records:
             setattr(AddToDatabaseForm, record.name, IntegerField(record.name, default=0))
             images[record.name] = record.swatch
+        setattr(AddToDatabaseForm, 'submit2', SubmitField('Add Color'))
         form = AddToDatabaseForm()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -59,6 +60,7 @@ def db_add():
                 image.save(image_path)
             formdata.pop('csrf_token')
             formdata.pop('submit')
+            formdata.pop('submit2', None)
             db_entry = dict()
             db_entry['medium'] = formdata.pop('medium')
             db_entry['name'] = formdata.pop('name')
