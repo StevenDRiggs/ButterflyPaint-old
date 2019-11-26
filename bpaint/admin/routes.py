@@ -31,15 +31,15 @@ def load_db():
 def db_add():
     form = AddToDatabaseForm()
     records = load_db()
-    recipe = []
+    ingredients = []
     images = dict()
     for record in records:
-        recipe.append((record.id, record.name, record.swatch))
-    if len(recipe) < 2:
-        recipe = []
+        ingredients.append((record.name, record.swatch))
+    if len(ingredients) < 2:
+        ingredients = []
     else:
         for record in records:
-            setattr(AddToDatabaseForm, record.name, IntegerField(record.name))
+            setattr(AddToDatabaseForm, record.name, IntegerField(record.name, default=0))
             images[record.name] = record.swatch
         form = AddToDatabaseForm()
     if request.method == 'POST':
@@ -64,7 +64,8 @@ def db_add():
             db_entry['name'] = formdata.pop('name')
             db_entry['pure'] = formdata.pop('pure')
             db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
-            db_entry['recipe'] = [(Color.query.filter('name'==key).first(), quantity) for key, quantity in formdata.items()]
+            recipe = [(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name) == quantity and quantity > 0]
+            db_entry['recipe'] = recipe
             if not db_entry['recipe']:
                 del db_entry['recipe']
             color = Color(**db_entry)
@@ -73,7 +74,7 @@ def db_add():
             return redirect(url_for('admin.db_add'))
         else:
             return 'Error:\n' + str(form.errors)
-    return render_template('admin/db_add.html', form=form, recipe=recipe, images=images)
+    return render_template('admin/db_add.html', form=form, images=images)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
 def db_update():
