@@ -32,13 +32,16 @@ def db_add():
     form = AddToDatabaseForm()
     records = load_db()
     recipe = []
+    images = dict()
     for record in records:
         recipe.append((record.id, record.name, record.swatch))
     if len(recipe) < 2:
         recipe = []
     else:
         for record in records:
-            form.setattr(str(record.id), IntegerField())
+            setattr(AddToDatabaseForm, record.name, IntegerField(record.name))
+            images[record.name] = record.swatch
+        form = AddToDatabaseForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
@@ -56,21 +59,21 @@ def db_add():
                 image.save(image_path)
             formdata.pop('csrf_token')
             formdata.pop('submit')
-            formdata['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
-            formdata['recipe'] = formdata.get('recipe')
-            if formdata['recipe']:
-                return f"{formdata['recipe']=}"
-                colors = tuple([int(id) for id in formdata['recipe']])
-                formdata['recipe'] = Color.query.filter(Color.id.in_(colors)).all()
-            else:
-                del formdata['recipe']
-            color = Color(**formdata)
+            db_entry = dict()
+            db_entry['medium'] = formdata.pop('medium')
+            db_entry['name'] = formdata.pop('name')
+            db_entry['pure'] = formdata.pop('pure')
+            db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
+            db_entry['recipe'] = [(Color.query.filter('name'==key).first(), quantity) for key, quantity in formdata.items()]
+            if not db_entry['recipe']:
+                del db_entry['recipe']
+            color = Color(**db_entry)
             db.session.add_all([color, *color.recipe])
             db.session.commit()
             return redirect(url_for('admin.db_add'))
         else:
             return 'Error:\n' + str(form.errors)
-    return render_template('admin/db_add.html', form=form, recipe=recipe)
+    return render_template('admin/db_add.html', form=form, recipe=recipe, images=images)
 
 @bp.route('/db/update', methods=['GET', 'POST'])
 def db_update():

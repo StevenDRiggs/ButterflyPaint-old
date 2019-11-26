@@ -8,24 +8,15 @@
     {% for field in form if field.name != 'csrf_token' %}
       <div>
         {{ field.label() }}
+        {% if field.label.text in images.keys() %}
+          <img src="{{ images[field.label.text] }}" alt="{{ field.label.text }}">
+        {% endif %}
         {{ field() }}
         {% for error in field.errors %}
           <div class="error">{{ error }}</div>
         {% endfor %}
       </div>
     {% endfor %}
-    {% if recipe %}
-      <div id="recipe">
-        {% for id, name, swatch in recipe %}
-          {{ form[f'{id}'] = {{ f'{id}'|IntegerField }}
-          {{ form[f'{id}'].label() }}
-  	      <img src="{{ swatch }}" alt="{{ swatch }}">
-          {{ form[f'{id}']() }}
-        {% endfor %}
-        {{ form['submit'].label() }}
-        {{ form['submit']() }}
-      </div>
-    {% endif %}
   </form>
   <script src="{{ url_for('admin.static', filename='javascript/recipe.js') }}"></script>
 {% endblock main_content %}

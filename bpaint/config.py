@@ -17,4 +17,4 @@ class Config(object):
     ALLOWED_FILES = IMAGES
     UPLOAD_FOLDER = os.path.abspath('./bpaint/static/images')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True
+#     SQLALCHEMY_ECHO = True
