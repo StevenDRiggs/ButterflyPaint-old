@@ -4,9 +4,9 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from PIL import Image, ImageFile
 
-# from sqlalchemy import in_
-
 from werkzeug.utils import secure_filename
+
+from wtforms import IntegerField
 
 from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
 
@@ -36,6 +36,9 @@ def db_add():
         recipe.append((record.id, record.name, record.swatch))
     if len(recipe) < 2:
         recipe = []
+    else:
+        for record in records:
+            form.setattr(str(record.id), IntegerField())
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
