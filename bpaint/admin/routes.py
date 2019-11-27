@@ -78,50 +78,11 @@ def db_add():
             return 'Error:\n' + str(form.errors)
     return render_template('admin/db_add.html', form=form, images=images)
 
-@bp.route('/db/update', methods=['GET', 'POST'])
+@bp.route('/db/update')
 def db_update():
-    from bpaint.models import Color
-    form = UpdateForm()
     records = load_db()
-    form.recipe.choices = []
-    for record in records:
-        form.recipe.choices.append((record.id, record.name))
-    if not form.recipe.choices:
-        return render_template('admin/db_no_update.html')
-    if request.method == 'POST':
-        # if form.validate_on_submit():
-            from bpaint import app, db, uploads
-            formdata = form.data
-            record = Color.query.filter_by(id=formdata.pop('update')).first()
-            os.remove(record.swatch)
-            image = formdata.pop('swatch')
-            image.filename = secure_filename(image.filename)
-            image.resize((200, 200))
-            with open(os.path.join(app.config['UPLOAD_FOLDER'], image.filename), 'w'):
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
-            formdata.pop('csrf_token')
-            formdata.pop('submit')
-            formdata['swatch'] = os.path.join(url_for('base.static', filename=f'images/{image.filename}'))
-            formdata['recipe'] = '|'.join(formdata.get('recipe', []))
-            for k, v in formdata.items():
-                setattr(record, k, v)
-            db.session.add(record)
-            db.session.commit()
-            if not record.recipe:
-                record.recipe = str(record.id)
-                db.session.add(record)
-                db.session.commit()
-            flash(f"{formdata['name']} successfully updated!")
-            return redirect(url_for('admin.db_update'))
-        # else:
-        #     return 'Error:\n' + str(form.errors)
-    form.update.choices = form.recipe.choices
-    rec_id = request.args.get('rec_id')
-    if rec_id:
-        record = Color.query.filter_by(id=rec_id).first().__dict__
-    else:
-        record = None
-    return render_template('admin/db_update.html', form=form, rec_id=rec_id, record=record)
+    choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
+    return render_template('admin/db_update_choices.html', choices=choices)
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():

@@ -1,0 +1,11 @@
+{% extends 'admin/db_home.html' %}
+
+{% block main_content %}
+  <h2>Update which color?</h2>
+  <div>
+    <ul>
+      {% for choice in choices %}
+        <li><a href="{{ url_for('admin.db_update') }}/{{ choice['id'] }}"><p>{{ choice['name'] }}</p><img src="{{ choice['swatch'] }}" alt="{{ choice['name'] }}"></a></li>
+    </ul>
+  </div>
+{% endblock main_content %}
