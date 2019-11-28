@@ -13,10 +13,17 @@ from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
 
+def load_db(rec_id=None):
+    from bpaint.models import Color
+    if not rec_id:
+        records_all = Color.query.all()
+    else:
+        records_all = Color.query.filter_by(rec_id).all()
+    return records_all
+
 @bp.route('/')
 def admin():
     return render_template('admin/index.html')
-
 
 @bp.route('/db/')
 def db_home():
@@ -83,6 +90,12 @@ def db_update():
     records = load_db()
     choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
     return render_template('admin/db_update_choices.html', choices=choices)
+
+@bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
+def db_update_color(rec_id):
+    form = UpdateForm()
+    records = load_db()
+
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
 def db_delete():
