@@ -4,7 +4,7 @@
 	{{ super() }}
 	<ul>
 		<li id="db_add"><a href="{{ url_for('admin.db_add') }}">Add</a></li>
-		<li id="db_update"><a href="{{ url_for('admin.db_update') }}">Update</a></li>
+		<li id="db_update"><a href="{{ url_for('admin.db_update_choices') }}">Update</a></li>
 		<li id="db_delete"><a href="{{ url_for('admin.db_delete') }}">Delete</a></li>
 	</ul>
 {% endblock navbar %}

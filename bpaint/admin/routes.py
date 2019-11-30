@@ -16,7 +16,7 @@ bp = Blueprint('admin', __name__, static_folder='static', template_folder='templ
 
 def load_db(rec_id=None):
     from bpaint.models import Color
-    records_all = Color.query.filter('Color.id'==rec_id).first() if rec_id else Color.query.all()
+    records_all = Color.query.filter_by(id=rec_id).all() if rec_id else Color.query.all()
     return records_all
 
 @bp.route('/')
@@ -30,7 +30,7 @@ def db_home():
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', dest_get='admin/db_add.html'):
     form = form(rec_id)
-    records = load_db(rec_id)
+    records = load_db()
     ingredients = []
     images = dict()
     for record in records:
@@ -38,11 +38,17 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
     if len(ingredients) < 2:
         ingredients = []
     else:
+        if type(form) is AddToDatabaseForm:
+            default = 0
+            label = 'Add'
+        else:
+            # !!!!!!!!!!!! default = eval("")
+            label = 'Update'
         for record in records:
-            setattr(AddToDatabaseForm, record.name, IntegerField(record.name, default=0))
+            setattr(type(form), record.name, IntegerField(record.name, default=default))
             images[record.name] = record.swatch
-        setattr(AddToDatabaseForm(), 'submit2', SubmitField('Add Color'))
-        form = form
+        setattr(type(form), 'submit2', SubmitField(f'{label} Color'))
+        form = type(form)(rec_id)
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
@@ -86,8 +92,9 @@ def db_update_choices():
 @bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
 def db_update(rec_id=None):
     if rec_id:
-        db_add(rec_id=rec_id, form=UpdateDatabaseForm, dest_post='admin.db_update', dest_get='admin/db_update.html')
+        return db_add(rec_id=rec_id, form=UpdateDatabaseForm, dest_post='admin.db_update', dest_get='admin/db_update.html')
     else:
+        flash('Must choose a color to update.')
         return redirect(url_for('admin.db_update_choices'))
 
 

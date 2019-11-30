@@ -27,7 +27,8 @@ class UpdateDatabaseForm(AddToDatabaseForm):
 
     def __init__(self, rec_id):
         from bpaint.admin.routes import load_db
-        record = load_db(rec_id)
+        record = load_db(rec_id)[0]
+        print(f'\n{rec_id=}\n{type(rec_id)=}\n{record=}\n')
         self.medium.default = record.medium
         self.name.default = record.name
         self.pure.default = record.pure

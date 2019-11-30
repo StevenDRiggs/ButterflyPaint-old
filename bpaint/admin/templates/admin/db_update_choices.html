@@ -6,7 +6,7 @@
     <div>
       <ul>
         {% for choice in choices %}
-          <li><a href="{{ url_for('admin.db_update') }}/{{ choice['id'] }}"><p>{{ choice['name'] }}</p><img src="{{ choice['swatch'] }}" alt="{{ choice['name'] }}"></a></li>
+          <li><a href="{{ url_for('admin.db_update_choices') }}/{{ choice['id'] }}"><p>{{ choice['name'] }}</p><img src="{{ choice['swatch'] }}" alt="{{ choice['name'] }}"></a></li>
         {% endfor %}
       </ul>
     </div>
