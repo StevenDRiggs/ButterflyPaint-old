@@ -1,3 +1,5 @@
+from sqlalchemy.ext.associationproxy import association_proxy
+
 from bpaint import db
 
 
@@ -14,6 +16,9 @@ class Color(db.Model):
         join_depth=1,
         lazy='joined'
         )
+
+    ingredients = association_proxy('recipe', 'ingredient_id')
+    quantities = association_proxy('recipe', 'quantity')
 
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()

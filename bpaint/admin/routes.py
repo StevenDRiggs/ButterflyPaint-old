@@ -30,6 +30,7 @@ def db_home():
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', dest_get='admin/db_add.html'):
     form = form(rec_id)
+    form_type = type(form)
     records = load_db()
     ingredients = []
     images = dict()
@@ -38,17 +39,24 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
     if len(ingredients) < 2:
         ingredients = []
     else:
-        if type(form) is AddToDatabaseForm:
-            default = 0
+        if form_type is AddToDatabaseForm:
+            rec = None
+            default = lambda _: 0
             label = 'Add'
         else:
-            # !!!!!!!!!!!! default = eval("")
+            rec = load_db(rec_id)[0]
+            form_type.medium.default = rec.medium
+            form_type.name.default = rec.name
+            form_type.pure.default - rec.pure
+            form_type.swatch.default = rec.swatch
+            rec_recipe = dict(zip(rec.ingredients, rec.quantities))
+            default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec_id else 0
             label = 'Update'
         for record in records:
-            setattr(type(form), record.name, IntegerField(record.name, default=default))
+            setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
             images[record.name] = record.swatch
-        setattr(type(form), 'submit2', SubmitField(f'{label} Color'))
-        form = type(form)(rec_id)
+        setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
+        form = form_type(rec_id)
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
