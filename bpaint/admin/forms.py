@@ -18,10 +18,21 @@ class AddToDatabaseForm(FlaskForm):
     swatch = FileField('Swatch', validators=[FileAllowed(uploads)])
     submit = SubmitField('Add Color')
 
+    def __init__(self, rec_id=None):
+        super().__init__()
 
-class UpdateForm(AddToDatabaseForm):
-    update = RadioField('')
+
+class UpdateDatabaseForm(AddToDatabaseForm):
     submit = SubmitField('Update Color')
+
+    def __init__(self, rec_id):
+        from bpaint.admin.routes import load_db
+        record = load_db(rec_id)
+        self.medium.default = record.medium
+        self.name.default = record.name
+        self.pure.default = record.pure
+        self.swatch.default = record.swatch
+        super().__init__()
 
 
 class DeleteForm(FlaskForm):

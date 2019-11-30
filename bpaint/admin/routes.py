@@ -8,17 +8,15 @@ from werkzeug.utils import secure_filename
 
 from wtforms import IntegerField, SubmitField
 
-from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateForm
+from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateDatabaseForm
 
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
 
+
 def load_db(rec_id=None):
     from bpaint.models import Color
-    if not rec_id:
-        records_all = Color.query.all()
-    else:
-        records_all = Color.query.filter_by(rec_id).all()
+    records_all = Color.query.filter('Color.id'==rec_id).first() if rec_id else Color.query.all()
     return records_all
 
 @bp.route('/')
@@ -29,15 +27,10 @@ def admin():
 def db_home():
     return render_template('admin/db_home.html')
 
-def load_db():
-    from bpaint.models import Color
-    records_all = Color.query.all()
-    return records_all
-
 @bp.route('/db/add', methods=['GET', 'POST'])
-def db_add():
-    form = AddToDatabaseForm()
-    records = load_db()
+def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', dest_get='admin/db_add.html'):
+    form = form(rec_id)
+    records = load_db(rec_id)
     ingredients = []
     images = dict()
     for record in records:
@@ -48,14 +41,13 @@ def db_add():
         for record in records:
             setattr(AddToDatabaseForm, record.name, IntegerField(record.name, default=0))
             images[record.name] = record.swatch
-        setattr(AddToDatabaseForm, 'submit2', SubmitField('Add Color'))
-        form = AddToDatabaseForm()
+        setattr(AddToDatabaseForm(), 'submit2', SubmitField('Add Color'))
+        form = form
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
             from bpaint.models import Color
             formdata = form.data
-            print(f'\n{formdata=}\n')
             image_file = formdata.pop('swatch')
             image_file.filename = secure_filename(image_file.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
@@ -80,21 +72,23 @@ def db_add():
             color = Color(**db_entry)
             db.session.add_all([color, *color.recipe])
             db.session.commit()
-            return redirect(url_for('admin.db_add'))
+            return redirect(url_for(dest_post))
         else:
             return 'Error:\n' + str(form.errors)
-    return render_template('admin/db_add.html', form=form, images=images)
+    return render_template(dest_get, form=form, images=images)
 
 @bp.route('/db/update')
-def db_update():
+def db_update_choices():
     records = load_db()
     choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
     return render_template('admin/db_update_choices.html', choices=choices)
 
 @bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
-def db_update_color(rec_id):
-    form = UpdateForm()
-    records = load_db()
+def db_update(rec_id=None):
+    if rec_id:
+        db_add(rec_id=rec_id, form=UpdateDatabaseForm, dest_post='admin.db_update', dest_get='admin/db_update.html')
+    else:
+        return redirect(url_for('admin.db_update_choices'))
 
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
@@ -112,7 +106,7 @@ def db_delete():
                 from bpaint import db
                 from bpaint.models import Color
                 formdata = form.data
-                record = Color.query.filter_by(id=formdata['delete']).first()
+                record = Color.query.filter('id'==formdata['delete']).first()
                 os.remove(record.swatch)
                 db.session.delete(record)
                 db.session.commit()
