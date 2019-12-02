@@ -27,36 +27,57 @@ def admin():
 def db_home():
     return render_template('admin/db_home.html')
 
-@bp.route('/db/add', methods=['GET', 'POST'])
-def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', dest_get='admin/db_add.html'):
-    form = form()
-    form_type = type(form)
+@bp.route('/db/<string:operation>', methods=['GET', 'POST'])
+@bp.route('/db/<string:operation>/<int:rec_id>', methods=['GET', 'POST'])
+def db_add_update(*, rec_id=None, operation=None):
+    operation = operation.lower()
+    if operation == 'add':
+        form_type = AddToDatabaseForm
+        dest_get = 'admin/db_add.html'
+    elif operation == 'update':
+        form_type = UpdateDatabaseForm
+        dest_get = 'admin/db_update.html'
+    elif operation == 'delete':
+        return redirect(url_for('db_delete'))
+    else:
+        flash('Error: Invalid Database Operation')
+        return redirect(url_for('.db_home'))
+
+    form = form_type()
     records = load_db()
     ingredients = []
     images = dict()
     for record in records:
         ingredients.append((record.name, record.swatch))
+
     if form_type is AddToDatabaseForm and len(ingredients) < 2:
         ingredients = []
     else:
-        if form_type is AddToDatabaseForm:
+        if form_type is AddToDatabaseForm:  # len(ingredients) >= 2
             rec = None
             default = lambda _: 0
             label = 'Add'
         else:  # form_type is UpdateDatabaseForm
             rec = load_db(rec_id)[0]
             rec_recipe = dict(zip(rec.ingredients, rec.quantities))
-            default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec_id else 0
+            default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec.id else 0
             label = 'Update'
+
         for record in records:
             setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
             images[record.name] = record.swatch
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
+
         form = form_type()
+        if rec:  # True only if form_type is UpdateDatabaseForm
+            prefill = rec.formdict()
+            form.populate_obj(prefill)
+
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
             from bpaint.models import Color
+
             formdata = form.data
             image_file = formdata.pop('swatch')
             image_file.filename = secure_filename(image_file.filename)
@@ -67,9 +88,11 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
             with Image.open(image_path) as image:
                 image = image.resize((200, 200))
                 image.save(image_path)
+
             formdata.pop('csrf_token')
             formdata.pop('submit')
             formdata.pop('submit2', None)
+
             db_entry = dict()
             db_entry['medium'] = formdata.pop('medium')
             db_entry['name'] = formdata.pop('name')
@@ -82,10 +105,74 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
             color = Color(**db_entry)
             db.session.add_all([color, *color.recipe])
             db.session.commit()
-            return redirect(url_for(dest_post))
-        else:
-            return 'Error:\n' + str(form.errors)
-    return render_template(dest_get, form=form, images=images, rec=rec.__dict__)
+            
+            return redirect(url_for('.db_add_update'))
+
+        else:  # not form.validate_on_submit()
+            flash(str(form.errors))
+            return redirect(url_for('.db_add_update'))
+
+    return render_template(dest_get, form=form, images=images)
+
+# @bp.route('/db/add', methods=['GET', 'POST'])
+# def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='.db_add', dest_get='admin/db_add.html'):
+#     form = form()
+#     form_type = type(form)
+#     records = load_db()
+#     ingredients = []
+#     images = dict()
+#     for record in records:
+#         ingredients.append((record.name, record.swatch))
+#     if form_type is AddToDatabaseForm and len(ingredients) < 2:
+#         ingredients = []
+#     else:
+#         if form_type is AddToDatabaseForm:
+#             rec = None
+#             default = lambda _: 0
+#             label = 'Add'
+#         else:  # form_type is UpdateDatabaseForm
+#             rec = load_db(rec_id)[0]
+#             rec_recipe = dict(zip(rec.ingredients, rec.quantities))
+#             default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec_id else 0
+#             label = 'Update'
+#         for record in records:
+#             setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
+#             images[record.name] = record.swatch
+#         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
+#         form = form_type()
+#     if request.method == 'POST':
+#         if form.validate_on_submit():
+#             from bpaint import app, db, uploads
+#             from bpaint.models import Color
+#             formdata = form.data
+#             image_file = formdata.pop('swatch')
+#             image_file.filename = secure_filename(image_file.filename)
+#             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+#             with open(image_path, 'w'):
+#                 image_file.save(image_path)
+#             ImageFile.LOAD_TRUNCATED_IMAGE = True
+#             with Image.open(image_path) as image:
+#                 image = image.resize((200, 200))
+#                 image.save(image_path)
+#             formdata.pop('csrf_token')
+#             formdata.pop('submit')
+#             formdata.pop('submit2', None)
+#             db_entry = dict()
+#             db_entry['medium'] = formdata.pop('medium')
+#             db_entry['name'] = formdata.pop('name')
+#             db_entry['pure'] = formdata.pop('pure')
+#             db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
+#             recipe = [(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name) == quantity and quantity > 0]
+#             db_entry['recipe'] = recipe
+#             if not db_entry['recipe']:
+#                 del db_entry['recipe']
+#             color = Color(**db_entry)
+#             db.session.add_all([color, *color.recipe])
+#             db.session.commit()
+#             return redirect(url_for(dest_post))
+#         else:
+#             return 'Error:\n' + str(form.errors)
+#     return render_template(dest_get, form=form, images=images, rec=rec.__dict__)
 
 @bp.route('/db/update')
 def db_update_choices():
@@ -93,13 +180,13 @@ def db_update_choices():
     choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
     return render_template('admin/db_update_choices.html', choices=choices)
 
-@bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
-def db_update(rec_id=None):
-    if rec_id:
-        return db_add(rec_id=rec_id, form=UpdateDatabaseForm, dest_post='admin.db_update', dest_get='admin/db_update.html')
-    else:
-        flash('Must choose a color to update.')
-        return redirect(url_for('admin.db_update_choices'))
+# @bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
+# def db_update(rec_id=None):
+#     if rec_id:
+#         return db_add(rec_id=rec_id, form=UpdateDatabaseForm, dest_post='.db_update', dest_get='admin/db_update.html')
+#     else:
+#         flash('Must choose a color to update.')
+#         return redirect(url_for('.db_update_choices'))
 
 
 @bp.route('/db/delete', methods=['GET', 'POST'])
@@ -122,10 +209,10 @@ def db_delete():
                 db.session.delete(record)
                 db.session.commit()
                 flash('Delete Successful!')
-                return redirect(url_for('admin.db_delete'))
+                return redirect(url_for('.db_delete'))
             else:
                 flash('Please choose a record to delete.')
-                return redirect(url_for('admin.db_delete'))
+                return redirect(url_for('.db_delete'))
         # else:
         #     return 'Error:\n' + str(form.errors)
     return render_template('admin/db_delete.html', form=form)

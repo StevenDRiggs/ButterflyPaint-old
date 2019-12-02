@@ -1,6 +1,10 @@
+import os
+
+from PIL import Image, ImageFile
+
 from sqlalchemy.ext.associationproxy import association_proxy
 
-from bpaint import db
+from bpaint import app, db
 
 
 class Color(db.Model):
@@ -33,6 +37,17 @@ class Color(db.Model):
             recipe = [(self, 1)]
         for entry in recipe:
             self.recipe.append(Recipe(self, entry))
+
+    def formdict(self):
+        filename = self.swatch.rsplit('/', 1)[1]
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r+') as image_file:
+            swatch = image_file
+        return {
+            'medium': self.medium,
+            'name': self.name,
+            'pure': self.pure,
+            'swatch': swatch,
+        }
 
     def __repr__(self):
         return f'<Color({self.name})>'
