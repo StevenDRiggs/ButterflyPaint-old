@@ -29,26 +29,22 @@ def db_home():
 
 @bp.route('/db/add', methods=['GET', 'POST'])
 def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', dest_get='admin/db_add.html'):
-    form = form(rec_id)
+    form = form()
     form_type = type(form)
     records = load_db()
     ingredients = []
     images = dict()
     for record in records:
         ingredients.append((record.name, record.swatch))
-    if len(ingredients) < 2:
+    if form_type is AddToDatabaseForm and len(ingredients) < 2:
         ingredients = []
     else:
         if form_type is AddToDatabaseForm:
             rec = None
             default = lambda _: 0
             label = 'Add'
-        else:
+        else:  # form_type is UpdateDatabaseForm
             rec = load_db(rec_id)[0]
-            form_type.medium.default = rec.medium
-            form_type.name.default = rec.name
-            form_type.pure.default - rec.pure
-            form_type.swatch.default = rec.swatch
             rec_recipe = dict(zip(rec.ingredients, rec.quantities))
             default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec_id else 0
             label = 'Update'
@@ -56,7 +52,7 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
             setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
             images[record.name] = record.swatch
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
-        form = form_type(rec_id)
+        form = form_type()
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
@@ -89,7 +85,7 @@ def db_add(*, rec_id=None, form=AddToDatabaseForm, dest_post='admin.db_add', des
             return redirect(url_for(dest_post))
         else:
             return 'Error:\n' + str(form.errors)
-    return render_template(dest_get, form=form, images=images)
+    return render_template(dest_get, form=form, images=images, rec=rec.__dict__)
 
 @bp.route('/db/update')
 def db_update_choices():
