@@ -30,21 +30,24 @@ def db_home():
 @bp.route('/db/<string:operation>', methods=['GET', 'POST'])
 @bp.route('/db/<string:operation>/<int:rec_id>', methods=['GET', 'POST'])
 def db_add_update(*, rec_id=None, operation=None):
-    operation = operation.lower()
+    records = load_db()
     if operation == 'add':
         form_type = AddToDatabaseForm
         dest_get = 'admin/db_add.html'
     elif operation == 'update':
-        form_type = UpdateDatabaseForm
-        dest_get = 'admin/db_update.html'
+        if not rec_id:
+            choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
+            return render_template('admin/db_update_choices.html', choices=choices)
+        else:
+            form_type = UpdateDatabaseForm
+            dest_get = 'admin/db_update.html'
     elif operation == 'delete':
-        return redirect(url_for('db_delete'))
+        return 'delete function'
     else:
         flash('Error: Invalid Database Operation')
         return redirect(url_for('.db_home'))
 
     form = form_type()
-    records = load_db()
     ingredients = []
     images = dict()
     for record in records:
@@ -106,11 +109,11 @@ def db_add_update(*, rec_id=None, operation=None):
             db.session.add_all([color, *color.recipe])
             db.session.commit()
             
-            return redirect(url_for('.db_add_update'))
+            return redirect(request.path)
 
         else:  # not form.validate_on_submit()
             flash(str(form.errors))
-            return redirect(url_for('.db_add_update'))
+            return redirect(request.path)
 
     return render_template(dest_get, form=form, images=images)
 
@@ -174,11 +177,9 @@ def db_add_update(*, rec_id=None, operation=None):
 #             return 'Error:\n' + str(form.errors)
 #     return render_template(dest_get, form=form, images=images, rec=rec.__dict__)
 
-@bp.route('/db/update')
-def db_update_choices():
-    records = load_db()
-    choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
-    return render_template('admin/db_update_choices.html', choices=choices)
+# @bp.route('/db/update')
+# def db_update_choices():
+#     records = load_db()
 
 # @bp.route('/db/update/<int:rec_id>', methods=['GET', 'POST'])
 # def db_update(rec_id=None):

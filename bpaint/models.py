@@ -39,15 +39,24 @@ class Color(db.Model):
             self.recipe.append(Recipe(self, entry))
 
     def formdict(self):
+        class FormDict(object):
+            medium = str
+            name = str
+            pure = bool
+            swatch = None
+
         filename = self.swatch.rsplit('/', 1)[1]
         with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r+') as image_file:
             swatch = image_file
-        return {
-            'medium': self.medium,
-            'name': self.name,
-            'pure': self.pure,
-            'swatch': swatch,
-        }
+
+        fd = FormDict()
+
+        fd.medium = self.medium
+        fd.name = self.name
+        fd.pure = self.pure
+        fd.swatch = self.swatch
+
+        return fd
 
     def __repr__(self):
         return f'<Color({self.name})>'
