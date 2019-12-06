@@ -18,7 +18,8 @@ class Color(db.Model):
         primaryjoin='Color.id==Recipe.base_id',
         uselist=True,
         join_depth=1,
-        lazy='joined'
+        lazy='joined',
+        cascade='all, delete-orphan'
         )
 
     ingredients = association_proxy('recipe', 'ingredient_id')
@@ -43,18 +44,14 @@ class Color(db.Model):
             medium = str
             name = str
             pure = bool
-            swatch = None
 
         filename = self.swatch.rsplit('/', 1)[1]
-        with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r+') as image_file:
-            swatch = image_file
 
         fd = FormDict()
 
         fd.medium = self.medium
         fd.name = self.name
         fd.pure = self.pure
-        fd.swatch = self.swatch
 
         return fd
 

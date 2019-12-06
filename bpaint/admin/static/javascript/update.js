@@ -1,7 +1,11 @@
-const update_form = document.querySelector('form');
-update = update_form.elements['update'];
-update.onclick = () => formPreLoad(update.value);
+let name = document.getElementById("name");
+let hidden_name = document.createElement("input");
 
-function formPreLoad(val) {
-	document.location = document.location.href.split('?')[0] + '?rec_id=' + val;
-}
+hidden_name.hidden = true;
+hidden_name.name = "name";
+hidden_name.id = "name";
+hidden_name.type = "text";
+hidden_name.value = name.value;
+
+name.disabled = true;
+name.parentElement.insertBefore(hidden_name, name);
