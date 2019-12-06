@@ -88,9 +88,6 @@ def db_add_update(*, operation=None, rec_id=None):
             db_entry = dict()
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 
-            # if form_type is UpdateDatabaseForm:
-            #     before = f'Before:<br>{color.medium=}<br>{color.name=}<br>{color.pure=}<br>{color.swatch=}<br>{color.recipe=}'
-
             formdata.pop('csrf_token')
             formdata.pop('submit')
             formdata.pop('submit2', None)
@@ -119,16 +116,17 @@ def db_add_update(*, operation=None, rec_id=None):
             else:
                 db_entry['swatch'] = color.swatch
 
+            db_vals = []
+            for v in db_entry.values():
+                db_vals.append(type(v))
+            print(f'{db_vals=}')
+
             if rec_id:
                 for k,v in db_entry.items():
                     setattr(color, k, v)
 
             if not color:
                 color = Color(**db_entry)
-
-            # if form_type is UpdateDatabaseForm:
-            #     after = f'After:<br>{color.medium=}<br>{color.name=}<br>{color.pure=}<br>{color.swatch=}<br>{color.recipe=}'
-            #     return f'{before}<br>{after}'
             
             db.session.add_all([color, *color.recipe])
             db.session.commit()

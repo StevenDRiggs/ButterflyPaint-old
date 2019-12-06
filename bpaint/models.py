@@ -14,13 +14,25 @@ class Color(db.Model):
     pure = db.Column(db.Boolean, nullable=False, default=True)
     swatch = db.Column(db.String(25), nullable=False, unique=True)
 
-    recipe = db.relationship('Recipe',
+    _recipe = db.relationship('Recipe',
         primaryjoin='Color.id==Recipe.base_id',
         uselist=True,
         join_depth=1,
         lazy='joined',
         cascade='all, delete-orphan'
         )
+
+    @property
+    def recipe(self):
+        return _recipe
+
+    @recipe.setter
+    def recipe(self, recipe=[]):
+        if self.pure:
+            recipe = [(self, 1)]
+        for entry in recipe:
+            self._recipe.append(Recipe(self, entry))
+
 
     ingredients = association_proxy('recipe', 'ingredient_id')
     quantities = association_proxy('recipe', 'quantity')
