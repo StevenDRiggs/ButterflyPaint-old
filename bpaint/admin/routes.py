@@ -44,6 +44,7 @@ def db_add_update(*, operation=None, rec_id=None):
             form_type = UpdateDatabaseForm
             dest_get = 'admin/db_update.html'
             label = 'Update'
+            del records[(rec_check := list(map(lambda r: r.id == rec_id, records))).index(True)]
     elif operation == 'delete':
         return 'db_add_update delete function'
     else:
@@ -66,7 +67,7 @@ def db_add_update(*, operation=None, rec_id=None):
         else:  # form_type is UpdateDatabaseForm
             rec = load_db(rec_id)[0]
             rec_recipe = dict(zip(rec.ingredients, rec.quantities))
-            default = lambda r: rec_recipe.get(r.id, 0) if r.id == rec.id else 0
+            default = lambda r: rec_recipe.get(r.id, 0)
 
         for record in records:
             setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
@@ -132,7 +133,9 @@ def db_add_update(*, operation=None, rec_id=None):
             db.session.commit()
 
             flash(f"{label} '{color.name}' Successful.")
-            
+
+            if rec_id:
+                return redirect(url_for('admin.db_home') + 'update')
             return redirect(request.path)
 
         else:  # not form.validate_on_submit()

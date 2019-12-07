@@ -11,7 +11,7 @@ class Color(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     medium = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(50), nullable=False, unique=True)
-    pure = db.Column(db.Boolean, nullable=False, default=True)
+    _pure = db.Column(db.Boolean, nullable=False, default=True)
     swatch = db.Column(db.String(25), nullable=False, unique=True)
 
     _recipe = db.relationship('Recipe',
@@ -24,38 +24,49 @@ class Color(db.Model):
 
     @property
     def recipe(self):
-        return _recipe
+        return self._recipe
 
     @recipe.setter
-    def recipe(self, recipe=[]):
-        if self.pure:
+    def recipe(self, recipe):
+        if self._pure:
             recipe = [(self, 1)]
+        self._recipe = []
         for entry in recipe:
             self._recipe.append(Recipe(self, entry))
 
+    @property
+    def pure(self):
+        return self._pure
 
-    ingredients = association_proxy('recipe', 'ingredient_id')
-    quantities = association_proxy('recipe', 'quantity')
+    @pure.setter
+    def pure(self, pure):
+        self._pure = pure
+        if self._pure:
+            self.recipe = [(self, 1)]
+
+
+    ingredients = association_proxy('_recipe', 'ingredient_id')
+    quantities = association_proxy('_recipe', 'quantity')
 
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()
         self.name = name
-        self.pure = False if len(recipe) > 1 else True
+        self._pure = False if len(recipe) > 1 else True
         self.swatch = swatch
 
         db.session.add(self)
         db.session.flush([self])
 
-        if self.pure:
+        if self._pure:
             recipe = [(self, 1)]
         for entry in recipe:
-            self.recipe.append(Recipe(self, entry))
+            self._recipe.append(Recipe(self, entry))
 
     def formdict(self):
         class FormDict(object):
             medium = str
             name = str
-            pure = bool
+            _pure = bool
 
         filename = self.swatch.rsplit('/', 1)[1]
 
@@ -63,7 +74,7 @@ class Color(db.Model):
 
         fd.medium = self.medium
         fd.name = self.name
-        fd.pure = self.pure
+        fd._pure = self._pure
 
         return fd
 
