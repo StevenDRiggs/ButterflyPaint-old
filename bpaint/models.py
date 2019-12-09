@@ -66,7 +66,7 @@ class Color(db.Model):
         class FormDict(object):
             medium = str
             name = str
-            _pure = bool
+            pure = bool
 
         filename = self.swatch.rsplit('/', 1)[1]
 
@@ -74,7 +74,7 @@ class Color(db.Model):
 
         fd.medium = self.medium
         fd.name = self.name
-        fd._pure = self._pure
+        fd.pure = self._pure
 
         return fd
 

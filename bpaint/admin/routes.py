@@ -32,6 +32,8 @@ def db_home():
 @bp.route('/db/<string:operation>/<int:rec_id>', methods=['GET', 'POST'])
 def db_add_update(*, operation=None, rec_id=None):
     records = load_db()
+    form = None
+
     if operation == 'add':
         form_type = AddToDatabaseForm
         dest_get = 'admin/db_add.html'
@@ -51,7 +53,6 @@ def db_add_update(*, operation=None, rec_id=None):
         flash('Error: Invalid Database Operation')
         return redirect(url_for('.db_home'))
 
-    form = form_type()
     ingredients = []
     images = dict()
     current = None
@@ -74,11 +75,15 @@ def db_add_update(*, operation=None, rec_id=None):
             images[record.name] = record.swatch
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
 
-        form = form_type()
         if rec:  # True only if form_type is UpdateDatabaseForm
             prefill = rec.formdict()
             form = form_type(obj=prefill)
             current = (rec.swatch, rec.name)
+            if hasattr(form, rec.name):
+                exec(f'del form.{rec.name}')
+
+    if not form:
+        form = form_type()
 
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -116,11 +121,6 @@ def db_add_update(*, operation=None, rec_id=None):
                 db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
             else:
                 db_entry['swatch'] = color.swatch
-
-            db_vals = []
-            for v in db_entry.values():
-                db_vals.append(type(v))
-            print(f'{db_vals=}')
 
             if rec_id:
                 for k,v in db_entry.items():
