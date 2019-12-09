@@ -23,5 +23,5 @@ class UpdateDatabaseForm(AddToDatabaseForm):
 
 
 class DeleteForm(FlaskForm):
-    delete = RadioField('delete')
+    cancel = SubmitField('Cancel')
     submit = SubmitField('Delete Color')

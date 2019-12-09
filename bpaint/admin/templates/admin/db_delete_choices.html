@@ -1,0 +1,16 @@
+{% extends 'admin/db_home.html' %}
+
+{% block main_content %}
+  {% if choices %}
+    <h2>Delete which color?</h2>
+    <div>
+      <ul>
+        {% for choice in choices %}
+          <li><a href="{{ url_for('admin.db_delete_verify', rec_id=choice['id']) }}"><p>{{ choice['name'] }}</p><img src="{{ choice['swatch'] }}" alt="{{ choice['name'] }}"></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <h3>Nothing to delete.</h3>
+  {% endif %}
+{% endblock main_content %}

@@ -48,7 +48,8 @@ def db_add_update(*, operation=None, rec_id=None):
             label = 'Update'
             del records[(rec_check := list(map(lambda r: r.id == rec_id, records))).index(True)]
     elif operation == 'delete':
-        return 'db_add_update delete function'
+            choices = [{'id': record.id, 'name': record.name, 'swatch': record.swatch} for record in records]
+            return render_template('admin/db_delete_choices.html', choices=choices)
     else:
         flash('Error: Invalid Database Operation')
         return redirect(url_for('.db_home'))
@@ -143,3 +144,20 @@ def db_add_update(*, operation=None, rec_id=None):
             return redirect(request.path)
 
     return render_template(dest_get, form=form, images=images, current=current)
+
+@bp.route('/db/delete/<int:rec_id>', methods=['GET', 'POST'])
+def db_delete_verify(rec_id, confirmed=False):
+    form = DeleteForm()
+    rec = load_db(rec_id)[0]
+    current = (rec.swatch, rec.name)
+    confirmed = form.data['submit']
+
+    if request.method == 'POST' and confirmed:
+        from bpaint import db
+        db.session.delete(rec)
+        db.session.commit()
+
+        flash(f'{rec.name} Successfully Deleted.')
+        return redirect(url_for('.db_home'))
+
+    return render_template('admin/db_delete_confirm.html', form=form, images={}, current=current)
