@@ -22,6 +22,9 @@ class Color(db.Model):
         cascade='all, delete-orphan'
         )
 
+    ingredients = association_proxy('_recipe', 'ingredient_id')
+    quantities = association_proxy('_recipe', 'quantity')
+
     @property
     def recipe(self):
         return self._recipe
@@ -43,10 +46,6 @@ class Color(db.Model):
         self._pure = pure
         if self._pure:
             self.recipe = [(self, 1)]
-
-
-    ingredients = association_proxy('_recipe', 'ingredient_id')
-    quantities = association_proxy('_recipe', 'quantity')
 
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()
@@ -77,6 +76,26 @@ class Color(db.Model):
         fd.pure = self._pure
 
         return fd
+
+    def delete(self):
+        def spiderweb_delete(ingredient_id):
+            color = Color.query.filter_by(id=ingredient_id).one()
+            if color.pure:
+                return color
+            else:
+                ingredients = color.ingredients
+                to_delete = set()
+                for ingredient_id in ingredients:
+                    to_delete.add(spiderweb_delete(ingredient_id))
+                return to_delete
+
+        ingredients = self.ingredients
+        to_delete = set()
+        for ingredient_id in ingredients:
+            to_delete.add(spiderweb_delete(ingredient_id))
+        db.session.delete_all(list(to_delete))
+        db.session.commit()
+
 
     def __repr__(self):
         return f'<Color({self.name})>'
