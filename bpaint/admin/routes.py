@@ -147,6 +147,7 @@ def db_add_update(*, operation=None, rec_id=None):
 
 @bp.route('/db/delete/<int:rec_id>', methods=['GET', 'POST'])
 def db_delete_verify(rec_id, confirmed=False):
+    from bpaint import db
     form = DeleteForm()
     if form.data['cancel']:
         return redirect(url_for('.db_home'))
@@ -156,6 +157,7 @@ def db_delete_verify(rec_id, confirmed=False):
 
     if request.method == 'POST' and confirmed:
         rec.delete()
+        db.session.commit()
 
         flash(f'{rec.name} Successfully Deleted.')
         return redirect(url_for('.db_home'))

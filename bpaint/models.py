@@ -78,24 +78,13 @@ class Color(db.Model):
         return fd
 
     def delete(self):
-        def spiderweb_delete(ingredient_id):
-            color = Color.query.filter_by(id=ingredient_id).one()
-            if color.pure:
-                return color
-            else:
-                ingredients = color.ingredients
-                to_delete = set()
-                for ingredient_id in ingredients:
-                    to_delete.add(spiderweb_delete(ingredient_id))
-                return to_delete
+        rec_id = self.id
+        recipes = Recipe.query.filter(Recipe.ingredient_id == rec_id)
+        bases = [r.base_id for r in recipes]
 
-        ingredients = self.ingredients
-        to_delete = set()
-        for ingredient_id in ingredients:
-            to_delete.add(spiderweb_delete(ingredient_id))
-        db.session.delete_all(list(to_delete))
-        db.session.commit()
-
+        recipes.delete()
+        for base_id in bases:
+            Color.query.filter(Color.id == base_id).delete()
 
     def __repr__(self):
         return f'<Color({self.name})>'
