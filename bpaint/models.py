@@ -47,20 +47,7 @@ class Color(db.Model):
         if self._pure:
             self.recipe = [(self, 1)]
 
-    def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
-        self.medium = medium.upper()
-        self.name = name
-        self._pure = False if len(recipe) > 1 else True
-        self.swatch = swatch
-
-        db.session.add(self)
-        db.session.flush([self])
-
-        if self._pure:
-            recipe = [(self, 1)]
-        for entry in recipe:
-            self._recipe.append(Recipe(self, entry))
-
+    @property
     def formdict(self):
         class FormDict(object):
             medium = str
@@ -77,14 +64,22 @@ class Color(db.Model):
 
         return fd
 
-    def delete(self):
-        rec_id = self.id
-        recipes = Recipe.query.filter(Recipe.ingredient_id == rec_id)
-        bases = [r.base_id for r in recipes]
+    def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
+        self.medium = medium.upper()
+        self.name = name
+        self._pure = False if len(recipe) > 1 else True
+        self.swatch = swatch
 
-        recipes.delete()
-        for base_id in bases:
-            Color.query.filter(Color.id == base_id).delete()
+        db.session.add(self)
+        db.session.flush([self])
+
+        if self._pure:
+            recipe = [(self, 1)]
+        for entry in recipe:
+            self._recipe.append(Recipe(self, entry))
+
+    def delete(self):
+        pass
 
     def __repr__(self):
         return f'<Color({self.name})>'
