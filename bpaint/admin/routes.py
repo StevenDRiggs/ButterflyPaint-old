@@ -77,8 +77,7 @@ def db_add_update(*, operation=None, rec_id=None):
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
 
         if rec:  # True only if form_type is UpdateDatabaseForm
-            prefill = rec.formdict()
-            form = form_type(obj=prefill)
+            form = form_type(obj=rec.formdict)
             current = (rec.swatch, rec.name)
             if hasattr(form, rec.name):
                 exec(f'del form.{rec.name}')

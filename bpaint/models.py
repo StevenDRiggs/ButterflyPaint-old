@@ -1,5 +1,7 @@
 import os
 
+from ordered_set import OrderedSet
+
 from PIL import Image, ImageFile
 
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -63,6 +65,11 @@ class Color(db.Model):
         fd.pure = self._pure
 
         return fd
+
+    @property
+    def used_in(self):
+        colors = OrderedSet([Color.query.filter(Color.id == r.base_id).one() for r in Recipe.query.all() if r.ingredient_id == self.id and self.id != r.base_id])
+        return colors
 
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()
