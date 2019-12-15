@@ -1,0 +1,40 @@
+export PATH='/bin:/c/HashiCorp/Vagrant/bin:/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/DAL:/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/IPT:/c/Program Files (x86)/Intel/iCLS Client:/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/c/Program Files (x86)/WinMerge:/c/Program Files/Common Files/Intel/WirelessCommon:/c/Program Files/Intel/Intel(R) Management Engine Components/DAL:/c/Program Files/Intel/Intel(R) Management Engine Components/IPT:/c/Program Files/Intel/WiFi/bin:/c/Program Files/Intel/iCLS Client:/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/c/Program Files/Microsoft VS Code/bin:/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/c/Program Files/Python38:/c/Program Files/Python38/Lib:/c/Program Files/Python38/Scripts:/c/Program Files/Python38/python.exe:/c/Program Files/dotnet:/c/ProgramData/Oracle/Java/javapath:/c/Users/fmvjo/AppData/Local/GitHubDesktop/bin:/c/Users/fmvjo/AppData/Local/Microsoft/WindowsApps:/c/Users/fmvjo/AppData/Local/atom/bin:/c/Users/fmvjo/bin:/c/WINDOWS:/c/WINDOWS/System32/OpenSSH:/c/WINDOWS/System32/Wbem:/c/WINDOWS/System32/WindowsPowerShell/v1.0:/c/WINDOWS/system32:/c/windows:/c/windows/System32/Wbem:/c/windows/System32/WindowsPowerShell/v1.0:/c/windows/system32:/mingw64/bin:/usr/bin:/usr/bin/core_perl:/usr/bin/python.exe:/usr/bin/vendor_perl:/usr/local/bin:/usr/local/bin/python:/c/Users/fmvjo/AppData/Roaming/Python/Python38/Scripts'
+
+unset PYTHONHOME
+
+alias virtualenv='C:/Users/fmvjo/AppData/Local/Programs/Python/Python36/Scripts/virtualenv.exe'
+
+HOME=/c/Users/fmvjo/Dropbox/programming
+
+alias ac='source ./homeenv/Scripts/activate'
+alias deac='deactivate'
+
+alias cp-reqs='py ~/my_py_tools/cp-reqs.py ${PWD}'
+
+alias dja='django-admin'
+alias runs='py manage.py runserver'
+
+alias ep='echo $PATH | tr ":" "\n"'
+alias lsr='ls -R -I*.pyc -I__pycache__ -I*env'
+
+alias flask="py -m flask"
+alias flaskdev="echo 'remember to export FLASK_APP=<your app>'
+export FLASK_ENV=development"
+
+alias grep='grep -E'
+
+alias jpn='jupyter notebook'
+
+alias pip='py -m pip'
+
+alias py='winpty -Xallow-non-tty python'
+alias python='winpty -Xallow-non-tty python'
+
+alias pycdel='find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf'
+
+alias tree-n="tree -I '*env|__pycache__|*.pyc'"
+alias tree-png="tree -I '*env|__pycache__|*.pyc|*.png'"
+
+alias virtualenv='py -m virtualenv'
+
+cd ~

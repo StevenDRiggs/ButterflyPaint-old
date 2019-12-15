@@ -71,6 +71,20 @@ class Color(db.Model):
         colors = OrderedSet([Color.query.filter(Color.id == r.base_id).one() for r in Recipe.query.all() if r.ingredient_id == self.id and self.id != r.base_id])
         return colors
 
+    @property
+    def affects(self):
+        def recursive_affects(color, all_colors=OrderedSet()):
+            a_c = color.used_in
+            if not a_c:
+                all_colors.add(color)
+            else:
+                for c in a_c:
+                    all_colors.add(recursive_affects(c, all_colors=a_c))
+
+            return all_colors
+
+        return recursive_affects(self)
+
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()
         self.name = name
