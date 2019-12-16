@@ -2,6 +2,8 @@ import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from inspect import getmembers
+
 from PIL import Image, ImageFile
 
 from werkzeug.datastructures import FileStorage
@@ -9,7 +11,7 @@ from werkzeug.utils import secure_filename
 
 from wtforms import IntegerField, SubmitField
 
-from bpaint.admin.forms import AddToDatabaseForm, DeleteForm, UpdateDatabaseForm
+from bpaint.admin.forms import ADD_ORIG_MEMBERS, AddToDatabaseForm, DeleteForm, UPDATE_ORIG_MEMBERS, UpdateDatabaseForm
 
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
@@ -36,6 +38,7 @@ def db_add_update(*, operation=None, rec_id=None):
 
     if operation == 'add':
         form_type = AddToDatabaseForm
+        form_origs = ADD_ORIG_MEMBERS
         dest_get = 'admin/db_add.html'
         label = 'Add'
     elif operation == 'update':
@@ -44,6 +47,7 @@ def db_add_update(*, operation=None, rec_id=None):
             return render_template('admin/db_update_choices.html', choices=choices)
         else:
             form_type = UpdateDatabaseForm
+            form_origs = UPDATE_ORIG_MEMBERS
             dest_get = 'admin/db_update.html'
             label = 'Update'
             del records[(rec_check := list(map(lambda r: r.id == rec_id, records))).index(True)]
@@ -53,6 +57,10 @@ def db_add_update(*, operation=None, rec_id=None):
     else:
         flash('Error: Invalid Database Operation')
         return redirect(url_for('.db_home'))
+
+    for member in getmembers(form_type):
+        if member not in form_origs:
+            delattr(form_type, member[0])
 
     ingredients = []
     images = dict()
