@@ -79,11 +79,14 @@ class Color(db.Model):
                 all_colors.add(color)
             else:
                 for c in a_c:
-                    all_colors.add(recursive_affects(c, all_colors=a_c))
+                    all_colors |= recursive_affects(c, all_colors=a_c)
 
             return all_colors
 
-        return recursive_affects(self)
+        affected = recursive_affects(self)
+        affected.add(self)
+
+        return affected
 
     def __init__(self, medium, name, *, pure=True, recipe=[], swatch):
         self.medium = medium.upper()
