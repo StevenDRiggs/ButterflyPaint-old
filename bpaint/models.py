@@ -103,7 +103,8 @@ class Color(db.Model):
             self._recipe.append(Recipe(self, entry))
 
     def delete(self):
-        pass
+        for color in self.affects:
+            db.session.delete(color)
 
     def __repr__(self):
         return f'<Color({self.name})>'

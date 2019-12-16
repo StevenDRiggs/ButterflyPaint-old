@@ -104,7 +104,7 @@ def db_add_update(*, operation=None, rec_id=None):
             if db_entry['pure']:
                 db_entry['recipe'] = None
             else:
-                db_entry['recipe'] = [(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name) == quantity and quantity > 0]
+                db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name) == quantity and quantity > 0]))
             if not db_entry['recipe']:
                 del db_entry['recipe']
 
@@ -131,6 +131,11 @@ def db_add_update(*, operation=None, rec_id=None):
             
             db.session.add_all([color, *color.recipe])
             db.session.commit()
+
+            try:
+                delattr(form_type, color.name)
+            except AttributeError:
+                pass
 
             flash(f"{label} '{color.name}' Successful.")
 
