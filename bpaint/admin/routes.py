@@ -99,6 +99,7 @@ def db_add_update(*, operation=None, rec_id=None):
             from bpaint.models import Color
 
             formdata = form.data
+            print(f"\n{formdata=}\n")
             db_entry = dict()
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 
@@ -131,6 +132,10 @@ def db_add_update(*, operation=None, rec_id=None):
                 db_entry['swatch'] = color.swatch
 
             if rec_id:
+                if db_entry['swatch'] != color.swatch:
+                    old_image_name = color.swatch.rsplit('/', 1)[1]
+                    old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], old_image_name)
+                    os.remove(old_image_path)
                 for k,v in db_entry.items():
                     setattr(color, k, v)
 
@@ -140,15 +145,13 @@ def db_add_update(*, operation=None, rec_id=None):
             db.session.add_all([color, *color.recipe])
             db.session.commit()
 
-            try:
+            if hasattr(form_type, color.name):
                 delattr(form_type, color.name)
-            except AttributeError:
-                pass
 
             flash(f"{label} '{color.name}' Successful.")
 
             if rec_id:
-                return redirect(url_for('admin.db_home') + 'update')
+                return redirect(url_for('.db_home') + 'update')
             return redirect(request.path)
 
         else:  # not form.validate_on_submit()
@@ -159,19 +162,26 @@ def db_add_update(*, operation=None, rec_id=None):
 
 @bp.route('/db/delete/<int:rec_id>', methods=['GET', 'POST'])
 def db_delete_verify(rec_id, confirmed=False):
-    from bpaint import db
+    from bpaint import app, db
     form = DeleteForm()
+
     if form.data['cancel']:
         return redirect(url_for('.db_home'))
+
     rec = load_db(rec_id)[0]
     current = (rec.swatch, rec.name)
+    affected = {r.name: r.swatch for r in rec.affects if r is not rec}
     confirmed = form.data['submit']
 
     if request.method == 'POST' and confirmed:
+        image_names = [r.swatch.rsplit('/', 1)[1] for r in rec.affects]
+        image_paths = [os.path.join(app.config['UPLOAD_FOLDER'], image_name) for image_name in image_names]
+        for image_path in image_paths:
+            os.remove(image_path)
         rec.delete()
         db.session.commit()
 
         flash(f'{rec.name} Successfully Deleted.')
         return redirect(url_for('.db_home'))
 
-    return render_template('admin/db_delete_confirm.html', form=form, images={}, current=current)
+    return render_template('admin/db_delete_confirm.html', form=form, images={}, current=current, affected=affected)

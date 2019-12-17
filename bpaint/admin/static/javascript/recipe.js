@@ -1,5 +1,10 @@
-let pure = document.getElementById("pure");
+let pure = document.getElementById("pure-display");
 let recipe = document.getElementsByClassName("recipe");
+
+let hidden_pure = document.createElement("select");
+hidden_pure.hidden = true;
+hidden_pure.name = "pure";
+hidden_pure.id = "pure";
 
 
 function ifChecked() {
@@ -16,10 +21,6 @@ function ifChecked() {
 			}
 		}
 	} else {
-		let hidden_pure = document.createElement("select");
-		hidden_pure.hidden = true;
-		hidden_pure.name = "pure";
-		hidden_pure.id = "pure";
 		hidden_pure.checked = true;
 		pure.checked = true;
 		pure.disabled = true;

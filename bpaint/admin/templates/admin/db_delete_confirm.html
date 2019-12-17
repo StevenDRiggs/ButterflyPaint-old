@@ -1,1 +1,16 @@
 {% extends 'admin/db_update.html' %}
+
+{% block main_content %}
+  {{ super() }}
+  {% if affected %}
+    <div id="affected-colors">
+      <h2>These additional colors will also be deleted:</h2>
+      {% for name, swatch in affected.items() %}
+        <div class="affected">
+          <h3>{{ name }}</h3>
+          <img src="{{ swatch }}" alt="{{ name }}">
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock main_content %}
