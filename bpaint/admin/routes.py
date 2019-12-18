@@ -99,7 +99,9 @@ def db_add_update(*, operation=None, rec_id=None):
             from bpaint.models import Color
 
             formdata = form.data
+            ###
             print(f"\n{formdata=}\n")
+            ###
             db_entry = dict()
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 

@@ -15,7 +15,7 @@ from bpaint.config import medium_choices
 class AddToDatabaseForm(FlaskForm):
     medium = RadioField('Medium', choices=medium_choices)
     name = StringField('Name', validators=[DataRequired(), Length(max=50)])
-    pure_display = BooleanField('Pure')
+    pure = BooleanField('Pure')
     swatch = FileField('Swatch', validators=[FileAllowed(uploads)])
     submit = SubmitField('Add Color')
 
