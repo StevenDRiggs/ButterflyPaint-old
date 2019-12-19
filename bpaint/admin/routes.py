@@ -60,7 +60,8 @@ def db_add_update(*, operation=None, rec_id=None):
 
     for member in getmembers(form_type):
         if member not in form_origs:
-            delattr(form_type, member[0])
+            if hasattr(form_type, member[0]):
+                delattr(form_type, member[0])
 
     ingredients = []
     images = dict()
@@ -106,6 +107,7 @@ def db_add_update(*, operation=None, rec_id=None):
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 
             formdata.pop('csrf_token')
+            formdata.pop('visible_pure')
             formdata.pop('submit')
             formdata.pop('submit2', None)
 
@@ -168,6 +170,7 @@ def db_delete_verify(rec_id, confirmed=False):
     form = DeleteForm()
 
     if form.data['cancel']:
+        flash('Delete Cancelled.')
         return redirect(url_for('.db_home'))
 
     rec = load_db(rec_id)[0]

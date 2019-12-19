@@ -7,6 +7,7 @@ from inspect import getmembers
 
 from wtforms.fields import BooleanField, IntegerField, RadioField, SelectField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
+from wtforms.widgets import HiddenInput
 
 from bpaint import uploads
 from bpaint.config import medium_choices
@@ -15,7 +16,8 @@ from bpaint.config import medium_choices
 class AddToDatabaseForm(FlaskForm):
     medium = RadioField('Medium', choices=medium_choices)
     name = StringField('Name', validators=[DataRequired(), Length(max=50)])
-    pure = BooleanField('Pure')
+    visible_pure = BooleanField(label='Pure', id='visible-pure')
+    pure = BooleanField(label='Pure', id='pure', widget=HiddenInput(), default=False)
     swatch = FileField('Swatch', validators=[FileAllowed(uploads)])
     submit = SubmitField('Add Color')
 
