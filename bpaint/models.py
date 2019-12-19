@@ -126,3 +126,7 @@ class Recipe(db.Model):
     def __repr__(self):
         return f'{self.ingredient_name}(x{self.quantity})'
 
+
+class Inventory(db.Model):
+    color_id = db.Column(db.Integer, db.ForeignKey('color.id'), primary_key=True, autoincrement=False)
+    quantity = db.Integer(nullable=False, default=0)
