@@ -1,4 +1,5 @@
 import os
+import re
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
@@ -113,6 +114,9 @@ def db_add_update(*, operation=None, rec_id=None):
 
             db_entry['medium'] = formdata.pop('medium')
             db_entry['name'] = formdata.pop('name')
+            if Color.query.filter(Color.name == db_entry['name']).first():
+                flash(f'Color \'{db_entry["name"]}\' already exists.')
+                return redirect(request.path)
             db_entry['pure'] = formdata.pop('pure')
             if db_entry['pure']:
                 db_entry['recipe'] = None
@@ -121,10 +125,21 @@ def db_add_update(*, operation=None, rec_id=None):
             if not db_entry['recipe']:
                 del db_entry['recipe']
 
-            if formdata['swatch']:
+            if formdata.get('swatch'):
                 image_file = formdata.pop('swatch')
                 image_file.filename = secure_filename(image_file.filename)
                 image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+                if form_type is AddToDatabaseForm and os.path.exists(image_path):
+                    similar = [filename for filename in os.listdir(app.config['UPLOAD_FOLDER']) if (pattern := os.path.splitext(image_file.filename)[0]) in filename]
+                    similar_map = map(lambda filename: re.match(pattern + '-(\d+)', filename), similar)
+                    numbers = {int(m.group(1)) for m in similar_map if m}
+                    for n in range(1, len(numbers) + 2):
+                        if n in numbers:
+                            continue
+                        else:
+                            image_file.filename = pattern + f'-{n}' + os.path.splitext(image_file.filename)[1]
+                            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+                            break
                 with open(image_path, 'w'):
                     image_file.save(image_path)
                 ImageFile.LOAD_TRUNCATED_IMAGE = True
@@ -132,8 +147,11 @@ def db_add_update(*, operation=None, rec_id=None):
                     image = image.resize((200, 200))
                     image.save(image_path)
                 db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
-            else:
+            elif color:
                 db_entry['swatch'] = color.swatch
+            else:
+                flash('Must include an image.')
+                return redirect(request.path)
 
             if rec_id:
                 if db_entry['swatch'] != color.swatch:
