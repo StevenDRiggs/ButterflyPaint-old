@@ -1,7 +1,35 @@
 {% extends 'admin/db_home.html' %}
 
+{% block head %}
+  {{ super() }}
+
+  <script>
+    function validateIngredients() {
+      let pure = document.querySelector('#pure');
+
+      if (!pure.checked) {
+        let ingredient_quantities = document.querySelectorAll('.recipe > input');
+        let form_to_validate = document.querySelector('form');
+        let total_ingredients = 0;
+
+        for (let i = 0; i < ingredient_quantities.length; i++) {
+          if (ingredient_quantities[i].value > 0) {
+            total_ingredients++;
+          }
+        }
+
+        if (total_ingredients < 2) {
+          alert('Must provide at least two separate ingredients for non-pure color.')
+          // document.location = '/admin/db/add'
+          return false;
+        }
+      }
+    }
+  </script>
+{% endblock head %}
+
 {% block main_content %}
-  <form action="" autocomplete="on" method="post" name="db-add" enctype="multipart/form-data">
+  <form action="" autocomplete="on" method="post" name="db-add" enctype="multipart/form-data" onsubmit="return validateIngredients()">
     <div hidden>
       {{ form.csrf_token }}
     </div>
