@@ -129,4 +129,8 @@ class Recipe(db.Model):
 
 class Inventory(db.Model):
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'), primary_key=True, autoincrement=False)
-    quantity = db.Integer(nullable=False, default=0)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+
+    def __init__(self, color, quantity=0):
+        self.color_id = color.id
+        self.quantity = quantity
