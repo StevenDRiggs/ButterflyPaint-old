@@ -1,41 +1,63 @@
-from flask import Blueprint, flash, render_template, request
+from flask import Blueprint, flash, redirect, render_template, request
 
-from wtforms.fields import IntegerField
+from wtforms.fields import IntegerField, SubmitField
 
 bp = Blueprint('inv', __name__, static_folder='static', template_folder='templates', url_prefix='/inventory')
 
 
 @bp.route('/', methods=['GET', 'POST'])
 def inv():
-    from bpaint import db
+    from bpaint import Color, db, Inventory
     from bpaint.inv.forms import InventoryForm
 
-    records = set(db.session.execute('select color.id as id, color.name as name, color.swatch as swatch, inventory.quantity as quantity from color join inventory on id = inventory.color_id').fetchall())
+    if request.method == 'GET':
+        color_ids = map(lambda x: x.values()[0], db.session.execute('select id from color').fetchall())
+        inv_color_ids = set(map(lambda y: y.values()[0], db.session.execute('select color_id from inventory').fetchall()))
 
-    for record in records:
-        if not hasattr(InventoryForm, record.name):
-            setattr(InventoryForm, record.name, IntegerField(record.name, default=record.quantity))
-        else:
-            getattr(InventoryForm, record.name).default = record.quantity
+        for color_id in color_ids:
+            if color_id not in inv_color_ids:
+                db.session.add(Inventory(color_id, 0))
+        db.session.commit()
 
-    form = InventoryForm()
+        display = db.session.execute('select color.name as name, color.swatch as swatch, inventory.quantity as quantity from color join inventory on color.id = inventory.color_id').fetchall()
+        images = dict()
 
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            formdata = form.data
-            formdata.pop('csrf_token')
-            formdata.pop('update')
+        if hasattr(InventoryForm, 'update'):
+            delattr(InventoryForm, 'update')
+        for item in display:
+            if not hasattr(InventoryForm, item.name):
+                setattr(InventoryForm, item.name, IntegerField(item.name, default=item.quantity))
+            images[item.name] = item.swatch
+        setattr(InventoryForm, 'update', SubmitField('Update Inventory'))
 
-            for field_id in formdata:
-                record = Inventory.query.filter(Inventory.color_id == int(field_id)).one()
-                record.quantity = formdata[field_id]
-                db.session.add(record)
+        form = InventoryForm()
 
-            db.session.commit()
-            flash('Inventory updated.')
+        return render_template('inv/index.html', form=form, images=images)
 
-        else:  # not form.validate_on_submit()
-            flash(str(form.errors))
-            return redirect(request.path)
+    elif request.method == 'POST':
+        form = InventoryForm()
+        formdata = form.data
 
-    return render_template('inv/index.html', form=form, records=records)
+        formdata.pop('csrf_token')
+        formdata.pop('update')
+
+        for name, quantity in formdata.items():
+            with db.session.no_autoflush:
+                color_id = Color.query.filter(Color.name == name).one().id
+                curr_inv = Inventory.query.filter(Inventory.color_id == color_id).first()
+                if not curr_inv:
+                    curr_inv = Inventory(color_id, quantity)
+                else:
+                    curr_inv.quantity = quantity
+                db.session.add(curr_inv)
+            delattr(InventoryForm, name)
+        db.session.commit()
+        if hasattr(InventoryForm, 'update'):
+            delattr(InventoryForm, 'update')
+
+        flash('Inventory successfully updated')
+        return redirect(request.path)
+
+    else:  # request.method is neither 'GET' nor 'POST'
+        flash('Illegal inventory operation')
+        return redirect(request.path)
