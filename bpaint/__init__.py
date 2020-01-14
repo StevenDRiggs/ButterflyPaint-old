@@ -28,7 +28,7 @@ db.create_all()
 db.session.commit()
 
 from bpaint.base import bp as base_bp
-from bpaint.admin.routes import bp as admin_bp
+from bpaint.admin.routes import bp as admin_bp, load_db
 from bpaint.inv.routes import bp as inv_bp
 from bpaint.search.routes import bp as search_bp
 from bpaint.search.pic.routes import bp as pic_search_bp

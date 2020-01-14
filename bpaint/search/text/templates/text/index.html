@@ -9,3 +9,29 @@
 </style>
 
 {% extends "bpaint/base.html" %}
+
+{% block main_content %}
+  <input type="text" id="text-search" oninput=fuzzySearch()>
+  {% for name, swatch in colors.items() %}
+    <div id="{{ name }}" class="result" hidden>
+	  <a href="#">
+	  	<h3>{{ name }}</h3>
+	  	<img src="{{ swatch }}" alt="{{ name }}">
+	  </a>
+	</div>
+  {% endfor %}
+
+  <script>
+    function fuzzySearch () {
+		let search_term = document.querySelector('#text-search').value
+		let found_colors = {{ search_term|fuzzy(colors.keys()) }}
+
+		console.log(`search_term=${typeof(search_term)}: ${search_term}`)
+		console.log(`found_colors=${typeof(found_colors)}: ${found_colors}`)
+
+		{# document.querySelectorAll('.result').forEach(function (result) {result.hidden = true;})
+
+		found_colors.forEach(function (color) {document.querySelector('#' + color).hidden = false;}) #}
+	}
+  </script>
+{% endblock main_content %}

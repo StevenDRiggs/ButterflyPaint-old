@@ -5,7 +5,9 @@ bp = Blueprint('text_search', __name__, static_folder='static', template_folder=
 
 @bp.route('/')
 def text_search():
-    return render_template('text/index.html')
+    from bpaint import db
+    colors = {color.name: color.swatch for color in db.session.execute('select name, swatch from color').fetchall()}
+    return render_template('text/index.html', colors=colors)
 
 @bp.route('/results')
 def text_search_results():
