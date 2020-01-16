@@ -12,5 +12,6 @@ def text_search():
         'swatch': color.swatch,
         'used_in': [c.name for c in color.used_in],
     } for color in Color.query.all()}
+    colors_list = [content['name'] for content in display_info.values()]
 
-    return render_template('text/index.html', display_info=display_info)
+    return render_template('text/index.html', display_info=display_info, colors_list=colors_list)

@@ -41,6 +41,9 @@
 	results = document.querySelectorAll('.result');
 
 	function fuzzySearchName(string) {
+		if (string == ''){
+			location.reload()
+		}
 		results.forEach(function(div) {
 			div.hidden = !div.id.includes(string);
 		});
