@@ -14,6 +14,8 @@ from skimage.color import rgb2lab, deltaE_cie76 as dE76
 
 from sklearn.cluster import KMeans
 
+from typing import List, Tuple
+
 from werkzeug.utils import secure_filename
 
 from bpaint.search.pic.forms import PicSearchForm
@@ -21,10 +23,15 @@ from bpaint.search.pic.forms import PicSearchForm
 bp = Blueprint('pic_search', __name__, static_folder='static', template_folder='templates', url_prefix='/search/pic')
 
 
-def rgb_to_hex(rgb):
-    return f'#{int(rgb[0]):02x}{int(rgb[1]):02x}{int(rgb[2]):02x}'
+# def rgb_to_hex(rgb: Tuple[float, float, float]) -> str:
+    # return f'#{int(rgb[0]):02x}{int(rgb[1]):02x}{int(rgb[2]):02x}'
 
-def get_colors(image, num_colors):
+def get_image(image_path: str) -> np.ndarray:
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return image
+
+def get_colors(image: np.ndarray, num_colors: int) -> List[np.ndarray]:
     modified_image = cv2.resize(image, (200, 200), interpolation=cv2.INTER_AREA)
     modified_image = modified_image.reshape(modified_image.shape[0] * modified_image.shape[1], 3)
 
@@ -36,12 +43,12 @@ def get_colors(image, num_colors):
 
     center_colors = clf.cluster_centers_
     ordered_colors = [center_colors[i] for i in counts.keys()]
-    hex_colors = [rgb_to_hex(ordered_colors[i]) for i in counts.keys()]
+    # hex_colors = [rgb_to_hex(ordered_colors[i]) for i in counts.keys()]
     rgb_colors = [ordered_colors[i] for i in counts.keys()]
 
     return rgb_colors
 
-def match_image_by_color(image, rgb, threshold=60, num_colors=1):
+def match_image_by_color(image: np.ndarray, rgb: Tuple[float, float, float], threshold: int = 60, num_colors: int = 1) -> bool:
     image_colors = get_colors(image, num_colors)
     selected_color = rgb2lab(np.uint8(np.asarray([[rgb]])))
 
@@ -69,8 +76,7 @@ def pic_search_results(threshold=2):
         from bpaint.admin.routes import load_db
 
         formdata = form.data
-        if formdata['threshold'] != 2:
-            threshold = formdata['threshold']
+        threshold = formdata.get('threshold', 2)
 
         for k, v in formdata.items():
             print(f'\n{k=}\n{v=}\n{type(v)=}\n')
@@ -78,8 +84,8 @@ def pic_search_results(threshold=2):
         IMAGE_DIRECTORY = os.path.join(app.config['UPLOAD_FOLDER'], 'temp')
 
         records = load_db()
-        images = os.listdir(IMAGE_DIRECTORY)
-        colors = {color.name: (color.swatch, get_colors(image, threshold)) for color in records for image in [get_colors(os.path.join(IMAGE_DIRECTORY, file_), num_colors=threshold) for file_ in images if not file_.startswith('.')]}
+        image_names = os.listdir(IMAGE_DIRECTORY)
+        colors = {color.name: (color.swatch, get_colors(image, threshold)) for color in records for image in [get_colors(cv2.imread(os.path.join(IMAGE_DIRECTORY, filename)), num_colors=threshold) for filename in image_names if not filename.startswith('.')]}
         
         results = []
 
