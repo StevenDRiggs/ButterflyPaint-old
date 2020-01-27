@@ -101,9 +101,6 @@ def db_add_update(*, operation=None, rec_id=None):
             from bpaint.models import Color
 
             formdata = form.data
-            ###
-            print(f"\n{formdata=}\n")
-            ###
             db_entry = dict()
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 
@@ -147,9 +144,9 @@ def db_add_update(*, operation=None, rec_id=None):
                     image = image.resize((200, 200))
                     image.save(image_path)
                 db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
-            elif color:
+            elif color:  # no image provided for update
                 db_entry['swatch'] = color.swatch
-            else:
+            else:  # no image provided for add
                 flash('Must include an image.')
                 return redirect(request.path)
 

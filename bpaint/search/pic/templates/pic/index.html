@@ -9,3 +9,15 @@
 </style>
 
 {% extends "bpaint/base.html" %}
+
+{% block main_content %}
+  <form action="{{ url_for('pic_search.pic_search_results') }}" method="post" id="pic-search-form" enctype="multipart/form-data">
+  <div hidden>
+	  {{ form.csrf_token }}
+  </div>
+	  {% for field in form if field.name != 'csrf_token' %}
+	    {{ field.label() }}
+	    {{ field() }}
+	  {% endfor %}
+  </form>
+{% endblock main_content %}

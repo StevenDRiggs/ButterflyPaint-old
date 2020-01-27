@@ -1,0 +1,10 @@
+{% extends pic_search/index.html %}
+
+{% block main_content %}
+  {% for result in results %}
+    <a class="pic-search-result" href="#">
+	    <img class="thumbnail" src="{{ result }}" alt="Color Result">
+	    <p>Color Result</p>
+    </a>
+  {% endfor %}
+{% endblock main_content %}
