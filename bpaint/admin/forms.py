@@ -10,11 +10,11 @@ from wtforms.validators import DataRequired, Length, Optional
 from wtforms.widgets import HiddenInput
 
 from bpaint import uploads
-from bpaint.config import medium_choices
+from bpaint.config import MEDIUM_CHOICES
 
 
 class AddToDatabaseForm(FlaskForm):
-    medium = RadioField('Medium', choices=medium_choices)
+    medium = RadioField('Medium', choices=MEDIUM_CHOICES)
     name = StringField('Name', validators=[DataRequired(), Length(max=50)])
     visible_pure = BooleanField(label='Pure', id='visible-pure')
     pure = BooleanField(label='Pure', id='pure', widget=HiddenInput(), default=False)

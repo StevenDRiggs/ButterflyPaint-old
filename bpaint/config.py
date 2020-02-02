@@ -2,13 +2,16 @@ import os
 
 from flask_uploads import IMAGES
 
-medium_choices = [
+MEDIUM_CHOICES = [
         ('OA', 'Oil/Acrylic'),
         # ('WC', 'Watercolor'),
         # ('DR', 'Digital (RGB)'),
         # ('DC', 'Digital (CMYK)'),
         # ('DH', 'Digital (HSL)'),
         ]
+
+DEFAULT_PIC_SEARCH_THRESHOLD = 60
+DEFAULT_PIC_SEARCH_NUM_COLORS = 5
 
 
 class Config(object):

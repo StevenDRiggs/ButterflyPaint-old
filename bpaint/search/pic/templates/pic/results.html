@@ -1,10 +1,11 @@
-{% extends pic_search/index.html %}
+{% extends 'pic/index.html' %}
 
 {% block main_content %}
   {% for result in results %}
     <a class="pic-search-result" href="#">
-	    <img class="thumbnail" src="{{ result }}" alt="Color Result">
-	    <p>Color Result</p>
+      <img class="thumbnail" src="{{ result }}" alt="Color Result">
+      <p>Color Result</p>
     </a>
   {% endfor %}
+  <a href="{{ url_for('pic_search.pic_search') }}">Search again?</a>
 {% endblock main_content %}
