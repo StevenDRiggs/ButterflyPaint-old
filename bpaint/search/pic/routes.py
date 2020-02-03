@@ -49,8 +49,8 @@ def get_color(image: np.ndarray, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS
     else:
         return tuple(rgb_colors[0])
 
-def match_image_by_color(image: np.ndarray, rgb: Tuple[float, float, float], threshold: int = 60, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS) -> bool:
-    image_color = get_color(image, num_colors)
+def match_image_by_color(image: np.ndarray, rgb: Tuple[float, float, float], threshold: int = DEFAULT_PIC_SEARCH_THRESHOLD, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS, heuristic: bool = False) -> bool:
+    image_color = get_color(image, num_colors=num_colors, heuristic=heuristic)
     selected_color = rgb2lab(np.uint8(np.asarray([[rgb]])))
 
     select_image = False

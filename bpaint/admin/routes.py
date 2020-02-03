@@ -21,6 +21,7 @@ bp = Blueprint('admin', __name__, static_folder='static', template_folder='templ
 def load_db(rec_id=None):
     from bpaint.models import Color
     records_all = Color.query.filter_by(id=rec_id).all() if rec_id else Color.query.all()
+    records_all.sort(key=lambda r: r.name)
     return records_all
 
 @bp.route('/')
