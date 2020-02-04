@@ -5,6 +5,8 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from inspect import getmembers
 
+from keyword import iskeyword
+
 from PIL import Image, ImageFile
 
 from werkzeug.datastructures import FileStorage
@@ -83,8 +85,12 @@ def db_add_update(*, operation=None, rec_id=None):
             default = lambda r: rec_recipe.get(r.id, 0)
 
         for record in records:
-            setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
-            images[record.name] = record.swatch
+            if record.name.isidentifier() and not iskeyword(record.name):
+                setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
+                images[record.name] = record.swatch
+            else:
+                setattr(form_type, f'color_{record.id}', IntegerField(f'color_{record.id}', default=default(record)))
+                images[f'color_{record.id}'] = record.swatch
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
 
         if rec:  # True only if form_type is UpdateDatabaseForm
@@ -112,14 +118,14 @@ def db_add_update(*, operation=None, rec_id=None):
 
             db_entry['medium'] = formdata.pop('medium')
             db_entry['name'] = formdata.pop('name')
-            if Color.query.filter(Color.name == db_entry['name']).first():
-                flash(f'Color \'{db_entry["name"]}\' already exists.')
-                return redirect(request.path)
+            # if Color.query.filter(Color.name == db_entry['name']).first():
+                # flash(f'Color \'{db_entry["name"]}\' already exists.')
+                # return redirect(request.path)
             db_entry['pure'] = formdata.pop('pure')
             if db_entry['pure']:
                 db_entry['recipe'] = None
             else:
-                db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name) == quantity and quantity > 0]))
+                db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name, formdata.get(f'color_{color.id}', 0)) == quantity and quantity > 0]))
             if not db_entry['recipe']:
                 del db_entry['recipe']
 
