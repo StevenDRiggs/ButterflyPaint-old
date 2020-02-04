@@ -29,7 +29,7 @@ def get_image(image_path: str) -> np.ndarray:
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
-def get_color(image: np.ndarray, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS, heuristic: bool = False) -> List[np.ndarray]:
+def get_color(image: np.ndarray, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS, heuristic: bool = True) -> List[np.ndarray]:
     modified_image = cv2.resize(image, (200, 200), interpolation=cv2.INTER_AREA)
     modified_image = modified_image.reshape(modified_image.shape[0] * modified_image.shape[1], 3)
 
@@ -44,18 +44,16 @@ def get_color(image: np.ndarray, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS
     rgb_colors = [ordered_colors[i] for i in counts.keys()]
 
     if heuristic:
-        return tuple(np.mean(np.array(rgb_colors), axis=0))
+        return tuple(np.int_(np.mean(np.array(rgb_colors), axis=0)))
 
     else:
-        return tuple(rgb_colors[0])
+        return tuple(np.int_(rgb_colors[0]))
 
-def match_image_by_color(image: np.ndarray, rgb: Tuple[float, float, float], threshold: int = DEFAULT_PIC_SEARCH_THRESHOLD, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS, heuristic: bool = False) -> bool:
+def match_image_by_color(image: np.ndarray, rgb: Tuple[int, int, int], threshold: int = DEFAULT_PIC_SEARCH_THRESHOLD, num_colors: int = DEFAULT_PIC_SEARCH_NUM_COLORS, heuristic: bool = True) -> bool:
     image_color = get_color(image, num_colors=num_colors, heuristic=heuristic)
-    selected_color = rgb2lab(np.uint8(np.asarray([[rgb]])))
-
     select_image = False
 
-    diff = dE76(selected_color, image_color)
+    diff = dE76(image_color, rgb)
     if diff <= threshold:
         select_image = True
 

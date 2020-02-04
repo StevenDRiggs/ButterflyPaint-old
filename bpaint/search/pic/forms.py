@@ -11,6 +11,6 @@ from bpaint.config import DEFAULT_PIC_SEARCH_THRESHOLD
 class PicSearchForm(FlaskForm):
     image_to_search = FileField('Image to Search', validators=[FileAllowed(uploads)])
     threshold = IntegerField('Color Threshold', default=DEFAULT_PIC_SEARCH_THRESHOLD)
-    heuristic = BooleanField('Heuristic Search', default=False)
-    extra_heuristic = BooleanField('Extra Heuristic Search', default=False)
+    # heuristic = BooleanField('Heuristic Search', default=True)
+    # extra_heuristic = BooleanField('Extra Heuristic Search', default=False)
     submit = SubmitField('Search Database')
