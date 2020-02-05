@@ -69,9 +69,8 @@ def pic_search():
 def pic_search_results():
     form = PicSearchForm()
     if form.validate_on_submit():
-        from bpaint import app, db, uploads
+        from bpaint import app, db, load_db, uploads
         from bpaint.models import Color
-        from bpaint.admin.routes import load_db
 
         formdata = form.data
         threshold = formdata.get('threshold', DEFAULT_PIC_SEARCH_THRESHOLD)

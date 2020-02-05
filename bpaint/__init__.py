@@ -29,6 +29,7 @@ db.session.commit()
 
 from bpaint.base import bp as base_bp
 from bpaint.admin.routes import bp as admin_bp, load_db
+from bpaint.details.routes import bp as details_bp
 from bpaint.inv.routes import bp as inv_bp
 from bpaint.search.routes import bp as search_bp
 from bpaint.search.pic.routes import bp as pic_search_bp
@@ -37,6 +38,7 @@ from bpaint.splash.routes import bp as splash_bp
 
 app.register_blueprint(base_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(details_bp)
 app.register_blueprint(inv_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(pic_search_bp)

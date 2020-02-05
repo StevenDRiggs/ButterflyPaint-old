@@ -1,0 +1,30 @@
+{% extends "bpaint/base.html" %}
+
+{% block main_content %}
+  <div class="details">
+    <ul>{{ current['name'] }}
+      <li><img src="{{ current['swatch'] }}" alt="{{ current['name'] }}"></li>
+      <li>Medium: {{ current['medium'] }}</li>
+      <li>Pure? {{ 'Yes' if current['pure'] else 'No' }}</li>
+    </ul>
+    <ul>Recipe:
+      {% for color in current['recipe'] %}
+        <li>
+            <a href="/details/{{ color.id }}">
+          <img src="{{ color.swatch }}" alt="{{ color.name }}">
+          <p>{{ color.name }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    <ul>Used in:
+      {% for color in current['used_in'] %}
+        <li>
+          <a href="/details/{{ color.id }}">
+            <img src="{{ color.swatch }}" alt="{{ color.name }}">
+            <p>{{ color.name }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+{% endblock main_content %}
