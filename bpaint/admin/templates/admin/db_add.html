@@ -34,10 +34,10 @@
       {{ form.csrf_token }}
     </div>
     {% for field in form if field.name != 'csrf_token' %}
-        {% if field.label.text in images.keys() %}
+        {% if field.name in images.keys() %}
           <div class="recipe">
             {{ field.label() }}
-            <img src="{{ images[field.label.text] }}" alt="{{ field.label.text }}">
+            <img src="{{ images[field.name] }}" alt="{{ field.label.text }}">
             {{ field() }}
           </div>
         {% else %}

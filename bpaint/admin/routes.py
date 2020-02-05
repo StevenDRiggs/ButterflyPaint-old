@@ -85,19 +85,13 @@ def db_add_update(*, operation=None, rec_id=None):
             default = lambda r: rec_recipe.get(r.id, 0)
 
         for record in records:
-            if record.name.isidentifier() and not iskeyword(record.name):
-                setattr(form_type, record.name, IntegerField(record.name, default=default(record)))
-                images[record.name] = record.swatch
-            else:
-                setattr(form_type, f'color_{record.id}', IntegerField(f'color_{record.id}', default=default(record)))
-                images[f'color_{record.id}'] = record.swatch
+            setattr(form_type, f'color_{record.id}', IntegerField(record.name, default=default(record)))
+            images[f'color_{record.id}'] = record.swatch
         setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
 
         if rec:  # True only if form_type is UpdateDatabaseForm
             form = form_type(obj=rec.formdict)
             current = (rec.swatch, rec.name)
-            if hasattr(form, rec.name):
-                exec(f'del form.{rec.name}')
 
     if not form:
         form = form_type()
@@ -105,9 +99,10 @@ def db_add_update(*, operation=None, rec_id=None):
     if request.method == 'POST':
         if form.validate_on_submit():
             from bpaint import app, db, uploads
-            from bpaint.models import Color
+            from bpaint.models import Color, Recipe
 
             formdata = form.data
+
             db_entry = dict()
             color = Color.query.filter_by(id=rec_id).one() if rec_id else None
 
@@ -116,16 +111,20 @@ def db_add_update(*, operation=None, rec_id=None):
             formdata.pop('submit')
             formdata.pop('submit2', None)
 
-            db_entry['medium'] = formdata.pop('medium')
             db_entry['name'] = formdata.pop('name')
-            # if Color.query.filter(Color.name == db_entry['name']).first():
-                # flash(f'Color \'{db_entry["name"]}\' already exists.')
-                # return redirect(request.path)
+            if rec:
+                if db_entry['name'] != rec.name:
+                    recipes = Recipe.query.filter(Recipe.ingredient_id == rec.id).all()
+                    for recipe in recipes:
+                        recipe.ingredient_name = db_entry['name']
+                        db.session.add(recipe)
+
+            db_entry['medium'] = formdata.pop('medium')
             db_entry['pure'] = formdata.pop('pure')
             if db_entry['pure']:
                 db_entry['recipe'] = None
             else:
-                db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(color.name, formdata.get(f'color_{color.id}', 0)) == quantity and quantity > 0]))
+                db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(f'color_{color.id}', -1) == quantity and quantity > 0]))
             if not db_entry['recipe']:
                 del db_entry['recipe']
 
@@ -171,8 +170,9 @@ def db_add_update(*, operation=None, rec_id=None):
             db.session.add_all([color, *color.recipe])
             db.session.commit()
 
-            if hasattr(form_type, color.name):
-                delattr(form_type, color.name)
+            for attr in getmembers(form_type):
+                if attr[0].startswith('color_'):
+                    exec(f'del form.{attr[0]}')
 
             flash(f"{label} '{color.name}' Successful.")
 
