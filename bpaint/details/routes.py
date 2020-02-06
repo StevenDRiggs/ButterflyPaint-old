@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template
 
+from bpaint.config import MEDIUM_CHOICES
+
 
 bp = Blueprint('details', __name__, static_folder='static', template_folder='templates', url_prefix='/details')
 
@@ -10,14 +12,29 @@ def details(rec_id):
 
     rec = load_db(rec_id)[0]
 
-    current = {
-            'medium': rec.medium,
-            'name': rec.name,
-            'pure': rec.pure,
-            'swatch': rec.swatch,
-            'recipe': rec.recipe,
-            'used_in': list(rec.used_in)
+    colors = {
+            'current': {
+                'medium': dict(MEDIUM_CHOICES)[rec.medium],
+                'name': rec.name,
+                'pure': rec.pure,
+                'swatch': rec.swatch,
+                'recipe': {
+                    recipe.ingredient_id: {
+                        'ingredient_name': recipe.ingredient_name,
+                        'quantity': recipe.quantity,
+                        'swatch': load_db(recipe.ingredient_id)[0].swatch,
+                        }
+                    for recipe in rec.recipe
+                    },
+                'used_in': {
+                    color.id: {
+                        'name': color.name,
+                        'swatch': color.swatch,
+                        }
+                    for color in rec.used_in
+                    }
+                }
             }
-    print(f'\n{current=}\n')
 
-    return render_template('details/index.html', current=current)
+
+    return render_template('details/index.html', colors=colors)
