@@ -2,13 +2,14 @@
 
 {% block main_content %}
   <div class="details">
-    <ul>{{ current['name'] }}
-      <li><img src="{{ current['swatch'] }}" alt="{{ current['name'] }}"></li>
-      <li>Medium: {{ current['medium'] }}</li>
-      <li>Pure? {{ 'Yes' if current['pure'] else 'No' }}</li>
+    <ul>{{ colors['current'['name']] }}
+      <li><img src="{{ colors['current'['swatch']] }}" alt="{{ colors['current'['name']] }}"></li>
+      {{ colors['current'] }}
+      <li>Medium: {{ colors['current'['medium']] }}</li>
+      <li>Pure? {{ 'Yes' if colors['current'['pure']] else 'No' }}</li>
     </ul>
     <ul>Recipe:
-      {% for color in current['recipe'] %}
+      {% for color in colors['current'['recipe']] %}
         <li>
             <a href="/details/{{ color.id }}">
           <img src="{{ color.swatch }}" alt="{{ color.name }}">
@@ -18,7 +19,7 @@
       {% endfor %}
     </ul>
     <ul>Used in:
-      {% for color in current['used_in'] %}
+      {% for color in colors['current'['used_in']] %}
         <li>
           <a href="/details/{{ color.id }}">
             <img src="{{ color.swatch }}" alt="{{ color.name }}">
@@ -27,4 +28,5 @@
         </li>
       {% endfor %}
     </ul>
+  </div>
 {% endblock main_content %}
