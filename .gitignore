@@ -4,6 +4,5 @@
 __pycache__/
 
 *.sqlite
-bpaint/static/images/*
 
 .mypy_cache/

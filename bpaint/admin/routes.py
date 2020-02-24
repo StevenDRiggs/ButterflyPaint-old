@@ -64,7 +64,9 @@ def db_add_update(*, operation=None, rec_id=None):
 
     for member in getmembers(form_type):
         if member not in form_origs:
-            if hasattr(form_type, member[0]):
+            if hasattr(form_type.__class__, member[0]):
+                delattr(form_type.__class__, member[0])
+            elif hasattr(form_type, member[0]):
                 delattr(form_type, member[0])
 
     ingredients = []
