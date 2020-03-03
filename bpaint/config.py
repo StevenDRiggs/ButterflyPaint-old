@@ -2,6 +2,7 @@ import os
 
 from flask_uploads import IMAGES
 
+
 MEDIUM_CHOICES = [
         ('OA', 'Oil/Acrylic'),
         # ('WC', 'Watercolor'),

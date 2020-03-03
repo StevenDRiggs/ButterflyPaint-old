@@ -1,13 +1,13 @@
-from flask import Flask, url_for
+from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 
-from flask_uploads import configure_uploads, patch_request_class, UploadSet
+from flask_uploads import UploadSet, configure_uploads, patch_request_class
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from bpaint.config import Config
+from .config import Config
 
 @event.listens_for(Engine, 'connect')
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -27,14 +27,14 @@ from bpaint.models import Color, Inventory, Recipe
 db.create_all()
 db.session.commit()
 
-from bpaint.base import bp as base_bp
-from bpaint.admin.routes import bp as admin_bp, load_db
-from bpaint.details.routes import bp as details_bp
-from bpaint.inv.routes import bp as inv_bp
-from bpaint.search.routes import bp as search_bp
-from bpaint.search.pic.routes import bp as pic_search_bp
-from bpaint.search.text.routes import bp as text_search_bp
-from bpaint.splash.routes import bp as splash_bp
+from .base import bp as base_bp
+from .admin.routes import bp as admin_bp, load_db
+from .details.routes import bp as details_bp
+from .inv.routes import bp as inv_bp
+from .search.routes import bp as search_bp
+from .search.pic.routes import bp as pic_search_bp
+from .search.text.routes import bp as text_search_bp
+from .splash.routes import bp as splash_bp
 
 app.register_blueprint(base_bp)
 app.register_blueprint(admin_bp)
