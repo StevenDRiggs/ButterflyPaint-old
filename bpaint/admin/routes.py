@@ -12,9 +12,9 @@ from flask import Blueprint, render_template # , flash, redirect, request, url_f
 # from werkzeug.datastructures import FileStorage
 # from werkzeug.utils import secure_filename
 
-# from wtforms import IntegerField, SubmitField
+from wtforms import IntegerField, SubmitField
 
-from bpaint.admin.forms import ADD_ORIG_MEMBERS, AddToDatabaseForm # , DeleteForm, UPDATE_ORIG_MEMBERS, UpdateDatabaseForm
+from .forms import ADD_ORIG_MEMBERS, AddToDatabaseForm # , DeleteForm, UPDATE_ORIG_MEMBERS, UpdateDatabaseForm
 
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
@@ -37,6 +37,14 @@ def reset_form(form_type, form_origs)
             elif hasattr(form_type, member[0]):
                 delattr(form_type, member[0])
 
+def set_form(form_type, records, default)
+    images = {}
+    for record in records:
+        setattr(form_type, f'color_{record.id}', IntegerField(record.name, default=default(record)))
+        images[f'color_{record.id}'] = record.swatch
+    setattr(form_type, 'submit2', SubmitField(f'{label} Color'))
+    return images
+
 @bp.route('/')
 def admin():
     return render_template('admin/index.html')
@@ -49,6 +57,12 @@ def db_home():
 def db_add():
     records = load_db()
     reset_form(AddToDatabaseForm, ADD_ORIG_MEMBERS)
+    ingredients = [(record.name, record.swatch) for record in records]
+    if len(ingredients) >=  2:
+        images = set_form(AddToDatabaseForm, records, lambda _: 0)
+    else:
+        images = []
+    return render_template('admin/db_add.html', form=AddToDatabaseForm(), images=images)
     
 
 # @bp.route('/db/<string:operation>', methods=['GET', 'POST'])
