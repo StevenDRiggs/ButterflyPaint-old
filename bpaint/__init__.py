@@ -1,8 +1,8 @@
 from flask import Flask
 
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 
-from flask_uploads import UploadSet, configure_uploads, patch_request_class
+#from flask_uploads import UploadSet, configure_uploads, patch_request_class
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -23,18 +23,18 @@ configure_uploads(app, uploads)
 patch_request_class(app, 10 * 1024 * 1024)
 
 db = SQLAlchemy(app=app, session_options={'expire_on_commit':False})
-from bpaint.models import Color, Inventory, Recipe
+#from bpaint.models import Color, Inventory, Recipe
 db.create_all()
 db.session.commit()
 
-from .base import bp as base_bp
-from .admin.routes import bp as admin_bp, load_db
-from .details.routes import bp as details_bp
-from .inv.routes import bp as inv_bp
-from .search.routes import bp as search_bp
-from .search.pic.routes import bp as pic_search_bp
-from .search.text.routes import bp as text_search_bp
-from .splash.routes import bp as splash_bp
+#from .base import bp as base_bp
+#from .admin.routes import bp as admin_bp, load_db
+#from .details.routes import bp as details_bp
+#from .inv.routes import bp as inv_bp
+#from .search.routes import bp as search_bp
+#from .search.pic.routes import bp as pic_search_bp
+#from .search.text.routes import bp as text_search_bp
+#from .splash.routes import bp as splash_bp
 
 app.register_blueprint(base_bp)
 app.register_blueprint(admin_bp)

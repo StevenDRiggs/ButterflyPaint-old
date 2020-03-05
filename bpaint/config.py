@@ -1,4 +1,4 @@
-import os
+#import os
 
 from flask_uploads import IMAGES
 

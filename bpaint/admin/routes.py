@@ -1,7 +1,7 @@
 # import os
 # import re
 
-from flask import Blueprint, render_template # , flash, redirect, request, url_for
+# from flask import Blueprint, render_template, flash, redirect, request, url_for
 
 # from inspect import getmembers
 
@@ -12,9 +12,9 @@ from flask import Blueprint, render_template # , flash, redirect, request, url_f
 # from werkzeug.datastructures import FileStorage
 # from werkzeug.utils import secure_filename
 
-from wtforms import IntegerField, SubmitField
+# from wtforms import IntegerField, SubmitField
 
-from .forms import ADD_ORIG_MEMBERS, AddToDatabaseForm # , DeleteForm, UPDATE_ORIG_MEMBERS, UpdateDatabaseForm
+# from .forms import ADD_ORIG_MEMBERS, AddToDatabaseForm, DeleteForm, UPDATE_ORIG_MEMBERS, UpdateDatabaseForm
 
 bp = Blueprint('admin', __name__, static_folder='static', template_folder='templates', url_prefix='/admin')
 
@@ -29,7 +29,7 @@ def load_db(rec_id=None):
         records_all.sort(key=lambda r: r.name)
         return records_all
 
-def reset_form(form_type, form_origs)
+def reset_form(form_type, form_origs):
     for member in getmembers(form_type):
         if member not in form_origs:
             if hasattr(form_type.__class__, member[0]):
@@ -37,7 +37,7 @@ def reset_form(form_type, form_origs)
             elif hasattr(form_type, member[0]):
                 delattr(form_type, member[0])
 
-def set_form(form_type, records, default)
+def set_form(form_type, records, default):
     images = {}
     for record in records:
         setattr(form_type, f'color_{record.id}', IntegerField(record.name, default=default(record)))
@@ -54,7 +54,7 @@ def db_home():
     return render_template('admin/db_home.html')
 
 @bp.route('/db/add')
-def db_add():
+def db_add_get():
     records = load_db()
     reset_form(AddToDatabaseForm, ADD_ORIG_MEMBERS)
     ingredients = [(record.name, record.swatch) for record in records]
@@ -64,6 +64,89 @@ def db_add():
         images = []
     return render_template('admin/db_add.html', form=AddToDatabaseForm(), images=images)
     
+@bp.route('db/add/<int:rec_id>', methods=['POST'])
+def db_add_post(rec_id):
+    records = load_db()
+    form = AddToDatabaseForm()
+    if form.validate_on_submit():
+        from bpaint import app, db, uploads, Color, Recipe
+
+        formdata = form.data
+
+        db_entry = dict()
+        color = Color.query.filter(Color.id == rec_id).one()
+
+        formdata.pop('csrf_token')
+        formdata.pop('visible_pure')
+        formdata.pop('submit')
+        formdata.pop('submit2', None)
+
+        db_entry['name'] = formdata.pop('name')
+        db_entry['medium'] = formdata.pop('medium')
+        db_entry['pure'] = formdata.pop('pure')
+        if db_entry['pure']:
+            db_entry['recipe'] = None
+        else:
+            db_entry['recipe'] = list(set([(color, quantity) for color in records for quantity in formdata.values() if formdata.get(f'color_{color.id}', -1) == quantity and quantity > 0]))
+        if not db_entry['recipe']:
+            del db_entry['recipe']
+
+        if formdata.get('swatch'):
+            image_file = formdata.pop('swatch')
+            image_file.filename = secure_filename(image_file.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+            if os.path.exists(image_path):
+                similar = [filename for filename in os.listdir(app.config['UPLOAD_FOLDER']) if (pattern := os.path.splitext(image_file.filename)[0]) in filename]
+                similar_map = map(lambda filename: re.match(pattern + '-(\d+)', filename), similar)
+                numbers = {int(m.group(1)) for m in similar_map if m}
+                for n in range(1, len(numbers) + 2):
+                    if n in numbers:
+                        continue
+                    else:
+                        image_file.filename = pattern + f'-{n}' + os.path.splitext(image_file.filename)[1]
+                        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
+                        break
+            with open(image_path, 'w'):
+                image_file.save(image_path)
+            ImageFile.LOAD_TRUNCATED_IMAGE = True
+            with Image.open(image_path) as image:
+                image = image.resize((200, 200))
+                image.save(image_path)
+            db_entry['swatch'] = url_for('static', filename=f'images/{image_file.filename}')
+        else:  # no image provided for add
+            flash('Must include an image.')
+            return redirect(request.path)
+
+#             if rec_id:
+#                 if db_entry['swatch'] != color.swatch:
+#                     old_image_name = color.swatch.rsplit('/', 1)[1]
+#                     old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], old_image_name)
+#                     os.remove(old_image_path)
+#                 for k,v in db_entry.items():
+#                     setattr(color, k, v)
+
+#             if not color:
+#                 color = Color(**db_entry)
+            
+#             db.session.add_all([color, *color.recipe])
+#             db.session.commit()
+
+#             for attr in getmembers(form_type):
+#                 if attr[0].startswith('color_'):
+#                     exec(f'del form.{attr[0]}')
+
+#             flash(f"{label} '{color.name}' Successful.")
+
+#             if rec_id:
+#                 return redirect(url_for('.db_home') + 'update')
+#             return redirect(request.path)
+
+#         else:  # not form.validate_on_submit()
+#             flash(str(form.errors))
+#             return redirect(request.path)
+
+#     return render_template(dest_get, form=form, images=images, current=current)
+
 
 # @bp.route('/db/<string:operation>', methods=['GET', 'POST'])
 # @bp.route('/db/<string:operation>/<int:rec_id>', methods=['GET', 'POST'])

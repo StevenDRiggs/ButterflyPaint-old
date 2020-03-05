@@ -1,4 +1,4 @@
-from flask import Blueprint # , redirect, render_template, url_for
+# from flask import Blueprint # , redirect, render_template, url_for
 
 bp = Blueprint('text_search', __name__, static_folder='static', template_folder='templates', url_prefix='/search/text')
 

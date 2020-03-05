@@ -1,4 +1,4 @@
-from flask import Blueprint # , render_template
+# from flask import Blueprint # , render_template
 
 # from bpaint.config import MEDIUM_CHOICES
 

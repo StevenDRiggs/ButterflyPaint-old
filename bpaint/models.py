@@ -1,12 +1,12 @@
-import os
+#import os
 
-from ordered_set import OrderedSet
+#from ordered_set import OrderedSet
 
-from PIL import Image, ImageFile
+#from PIL import Image, ImageFile
 
-from sqlalchemy.ext.associationproxy import association_proxy
+#from sqlalchemy.ext.associationproxy import association_proxy
 
-from bpaint import app, db
+#from bpaint import app, db
 
 
 class Color(db.Model):

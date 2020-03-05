@@ -1,16 +1,16 @@
 # from flask import url_for
 
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+# from flask_wtf import FlaskForm
+# from flask_wtf.file import FileField, FileAllowed
 
 # from inspect import getmembers
 
-from wtforms.fields import RadioField, StringField, BooleanField, SubmitField # , IntegerField, SelectField, SelectMultipleField
-from wtforms.validators import DataRequired, Length # , Optional
-from wtforms.widgets import HiddenInput
+# from wtforms.fields import RadioField, StringField, BooleanField, SubmitField # , IntegerField, SelectField, SelectMultipleField
+# from wtforms.validators import DataRequired, Length # , Optional
+# from wtforms.widgets import HiddenInput
 
 # from bpaint import uploads
-from bpaint.config import MEDIUM_CHOICES
+# from bpaint.config import MEDIUM_CHOICES
 
 
 class AddToDatabaseForm(FlaskForm):

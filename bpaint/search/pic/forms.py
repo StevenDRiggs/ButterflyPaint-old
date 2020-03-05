@@ -1,11 +1,11 @@
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileField
+# from flask_wtf import FlaskForm
+# from flask_wtf.file import FileAllowed, FileField
 
-from wtforms.fields import BooleanField, IntegerField, SubmitField
-from wtforms.validators import DataRequired
+# from wtforms.fields import BooleanField, IntegerField, SubmitField
+# from wtforms.validators import DataRequired
 
-from bpaint import uploads
-from bpaint.config import DEFAULT_PIC_SEARCH_THRESHOLD
+# from bpaint import uploads
+# from bpaint.config import DEFAULT_PIC_SEARCH_THRESHOLD
 
 
 class PicSearchForm(FlaskForm):
