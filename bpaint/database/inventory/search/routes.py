@@ -6,8 +6,8 @@ bp = Blueprint('search', __name__, url_prefix='/search')
 
 @bp.route('/')
 def search():
-	pass
+    return __name__
 
 @bp.route('/image')
 def image_search():
-	pass
+    return __name__

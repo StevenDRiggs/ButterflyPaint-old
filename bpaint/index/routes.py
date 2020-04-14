@@ -6,4 +6,4 @@ bp = Blueprint('index', __name__)
 
 @bp.route('/index')
 def index():
-    pass
+    return __name__

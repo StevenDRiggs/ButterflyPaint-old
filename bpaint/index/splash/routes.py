@@ -6,4 +6,4 @@ bp = Blueprint('splash', __name__)
 
 @bp.route('/')
 def splash():
-	pass
+    return __name__
