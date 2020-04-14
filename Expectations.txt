@@ -1,0 +1,285 @@
+URL:
+	/
+		- splash page
+			- timed
+			- link to index page after timer
+			- manual link to index page
+			- does not repeat unless manually requested
+			- display random colors from database
+
+	/index
+		- index page
+			- link to manually repeat splash page
+			- link to database management page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- display random color/recipe/origin from database
+
+____________________________________________________________________________________________
+
+
+	/database
+		- database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- display random color/recipe/origin from database
+
+	/database/add
+		- add to database page
+			- link to database management page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- display random color/recipe/origin from database
+			- link to add single color page
+			- link to batch add colors page
+
+	/database/add/single
+		- add single color page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to batch add colors page
+			- form to submit single color
+				- required:
+					- name (unique by verified automatic rename OR manual rename, per medium)
+					- medium
+					- image (swatch)
+					- set (origin) (default is Custom)
+					- pure/recipe (default is pure)
+					- digital? (default is false)
+				- optional:
+					- creator name
+					- notes
+			- link to verify changes page upon submission
+
+	/database/add/batch
+		- batch add colors page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to add single color page
+			- form to submit batch colors
+				- required:
+					- set name (unique) (color names are automatically numbered from set name)
+					- medium
+					- (image folder AND recipe list text) OR database
+					- digital?
+					- creator name
+				- optional:
+					- set notes
+			- link to verify changes page upon submission
+
+	/database/update
+		- update database page
+			- link to database management page
+			- link to add to database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- display random color/recipe/origin from database
+			- link to update single color page
+			- link to batch update colors page
+
+	/database/update/single
+		- update single color page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to batch update colors page
+			- selection area to choose color
+			- link to update single color with choice page upon submission
+
+	/database/update/single/<int:color_id>
+			- form to edit single color (all optional, all default is database original)
+				- name (unique by verified automatic rename OR manual rename, per medium)
+				- medium
+				- image (swatch)
+				- set (origin)
+				- pure/recipe
+				- digital?
+				- creator name
+				- notes
+			- link to verify changes page upon submission
+
+	/database/update/batch
+		- batch update colors page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to update single color page
+			- checkbox to choose colors
+				- shortcut to select/deselect entire sets
+			- link to batch update form page with choices
+
+	/database/update/batch/update
+			- form to submit batch colors (all optional, no defaults, all changes applied to all chosen colors)
+				- required:
+					- update all as same? (name will be unique by automatic numbering, per medium, any other field will be duplicated across all, recipe not possible, default is false)
+				- optional:
+					- name (unique)
+					- medium
+					- image (swatch)
+					- set (origin)
+						- if update all as same, toggle:
+							- update set membership
+							- make new set
+					- pure/recipe (unavailable if update all as same)
+					- digital?
+					- creator name
+					- notes
+			- link to verify changes page upon submission
+
+	/database/delete
+		- delete from database page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- display random color/recipe/origin from database
+			- link to delete single color page
+			- link to batch delete colors page
+
+	/database/delete/single
+		- delete single color page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to batch delete colors page
+			- selection area to choose color
+			- link to verify changes page upon submission
+
+	/database/delete/batch
+		- batch delete colors page
+			- link to database management page
+			- link to add to database page
+			- link to update database page
+			- link to delete from database page
+			- link to index page
+			- link to inventory management page
+			- link to search page
+			- link to recipe predictor page
+			- link to delete single color page
+			- checkbox to choose colors
+				- shortcut to select/deselect entire sets
+			- link to verify changes page upon submission
+
+	/database/verify
+		- verify changes page
+		- present all pending changes
+		- link to database management page with success message upon verifying
+		- link to database management page with cancellation message upon cancelling
+
+_________________________________________________________________________________________________
+
+
+	/inventory
+		- inventory management page
+			- link to index page
+			- link to database management page
+			- link to search page
+			- link to recipe predictor page
+			- display current inventory (color, quantity)
+				- sort options (tierable):
+					- by name (alphabetical)
+					- by quantity
+					- by age of record
+					- by color groupings
+					- by set
+					- by medium
+					- by digital?
+					- by creator name (alphabetical)
+					- by recipe ingredient
+					- by pure
+				- each color displays basic summary and image
+				- each color links to individual color detail page
+				- may update quantity from here
+			- update database upon page change, browser exit or 30 min passes
+
+	/inventory/details/<int:color_id>
+		- individual color detail page
+			- link to index page
+			- link to database management page
+			- link to inventory page
+			- link to search page
+			- link to recipe predictor page
+			- may update quantity from here
+			- display all details of color
+				- in recipe section (if not pure) each color in recipe appears and links as colors on inventory page
+			- update database upon page change, browser exit or 30 min passes
+
+____________________________________________________________________________________________________
+
+
+	/search
+		- search page
+			- link to index page
+			- link to database management page
+			- link to inventory management page
+			- link to recipe predictor page
+			- link to image search page
+			- adaptive text search
+				- bring up colors with fuzzy name matching in real time as typed
+					- colors displayed as image and name, linked to individual color detail pages
+
+	/search/image
+		- image search page
+			- form for image search
+				- number of matches (default is 10)
+				- image to match
+				- ***possible*** higher detail match option (if it takes longer, automatic if not)
+				- bring up colors upon submission
+			- colors display name, image
+				- link to individual color detail pages
+
+_________________________________________________________________________________________________________
+
+
+	/predictor
+		- recipe predictor page
+			- link to index page
+			- link to database management page
+			- link to inventory management page
+			- link to search page
+			- dropdown mediums
+				- colors from chosen medium shown as draggable bubbles
+					- drag to mix colors and display predicted result
