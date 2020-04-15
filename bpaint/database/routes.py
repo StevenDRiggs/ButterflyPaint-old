@@ -1,12 +1,12 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 
-bp = Blueprint('database', __name__, url_prefix='/database')
+bp = Blueprint('database', __name__, url_prefix='/database', template_folder='templates')
 
 
 @bp.route('/')
 def database():
-    return __name__
+    return render_template('database/database.html')
 
 
 @bp.route('/add')
