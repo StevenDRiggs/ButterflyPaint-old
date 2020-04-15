@@ -61,8 +61,19 @@ class TestValidURLs(unittest.TestCase):
         self.status_code_check('/database/update/batch')
 
     def test_database_update_batch_update_status_code(self):
-        self.status_code_check('/database/update/batch/update', choices=[('a', 1), ('b', 2), ('c', 3)])
+        self.status_code_check('/database/update/batch/update')
 
+    def test_database_delete(self):
+        self.status_code_check('/database/delete')
+
+    def test_database_delete_single(self):
+        self.status_code_check('/database/delete/single')
+
+    def test_database_delete_batch(self):
+        self.status_code_check('/database/delete/batch')
+
+    def test_database_verify(self):
+        self.status_code_check('/database/verify')
 
 if __name__ == '__main__':
     unittest.main()
