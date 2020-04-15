@@ -75,5 +75,12 @@ class TestValidURLs(unittest.TestCase):
     def test_database_verify(self):
         self.status_code_check('/database/verify')
 
+    def test_inventory(self):
+        self.status_code_check('/inventory')
+
+    def test_inventory_details_color_id(self):
+        color_id = randint(1, 10)
+        self.status_code_check(f'/inventory/details/{color_id}')
+
 if __name__ == '__main__':
     unittest.main()
