@@ -82,5 +82,14 @@ class TestValidURLs(unittest.TestCase):
         color_id = randint(1, 10)
         self.status_code_check(f'/inventory/details/{color_id}')
 
+    def test_search(self):
+        self.status_code_check('/search')
+
+    def test_search_image(self):
+        self.status_code_check('/search/image')
+
+    def test_predictor(self):
+        self.status_code_check('/predictor')
+
 if __name__ == '__main__':
     unittest.main()
