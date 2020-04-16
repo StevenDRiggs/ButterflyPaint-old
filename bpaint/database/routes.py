@@ -39,7 +39,7 @@ def batch_update_colors():
     return render_template('database/update_batch.html')
 
 @bp.route('/update/batch/update')
-def batch_update_colors_with_choices(choices):
+def batch_update_colors_with_choices():
     return render_template('database/update_batch_update.html')
 
 
@@ -49,13 +49,13 @@ def delete_from_database():
 
 @bp.route('/delete/single')
 def delete_single_color():
-    return __name__
+    return render_template('database/delete_single.html')
 
 @bp.route('/delete/batch')
 def batch_delete_colors():
-    return __name__
+    return render_template('database/delete_batch.html')
 
 
 @bp.route('verify')
-def verify_changes(changes):
-    return __name__
+def verify_changes():
+    return render_template('database/verify.html')

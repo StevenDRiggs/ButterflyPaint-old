@@ -36,7 +36,7 @@ class TestValidURLs(unittest.TestCase):
         self.status_code_check('/index')
 
     def test_database_status_code(self):
-        self.status_code_check('/database')
+        self.status_code_check('/database', 308)
 
     def test_database_add_status_code(self):
         self.status_code_check('/database/add')
@@ -76,20 +76,21 @@ class TestValidURLs(unittest.TestCase):
         self.status_code_check('/database/verify')
 
     def test_inventory(self):
-        self.status_code_check('/inventory')
+        self.status_code_check('/inventory', 308)
 
     def test_inventory_details_color_id(self):
         color_id = randint(1, 10)
         self.status_code_check(f'/inventory/details/{color_id}')
 
     def test_search(self):
-        self.status_code_check('/search')
+        self.status_code_check('/search', 308)
 
     def test_search_image(self):
         self.status_code_check('/search/image')
 
     def test_predictor(self):
-        self.status_code_check('/predictor')
+        self.status_code_check('/predictor', 308)
+
 
 if __name__ == '__main__':
     unittest.main()

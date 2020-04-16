@@ -1,13 +1,13 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 
-bp = Blueprint('search', __name__, url_prefix='/search')
+bp = Blueprint('search', __name__, url_prefix='/search', template_folder='templates')
 
 
 @bp.route('/')
 def search():
-    return __name__
+    return render_template('search/search.html')
 
 @bp.route('/image')
 def image_search():
-    return __name__
+    return render_template('search/image.html')
