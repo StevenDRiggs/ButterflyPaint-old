@@ -33,12 +33,12 @@ LOGINMANAGER.login_view = 'index'
 
 #Loading Users to Flask-Login
 @LOGINMANAGER.user_loader
-def load_user(username):
+def load_user(user_id):
     '''
     Queries and loads all users from the db module.
     '''
     #Getting all users from the database
-    return User.query.get(username)
+    return User.query.get(user_id)
 
 #TODO: Register more blueprints like this
 # Check the blueprint folder for more info
