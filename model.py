@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
     def is_verified(self, password):
         return cph(self.password, password)
 
-    def __repr__(self):
+    def __repr__:
         return f'<User: {self.name=}>'
         
 
@@ -44,7 +44,7 @@ class Color(db.Model):
             secondaryjoin='colors.c.id==recipes.c.ingredient_color_id'
     )
 
-    def __repr__(self):
+    def __repr__:
         return f'<Color: {self.name=}, {self.recipe=}>'
 
 
