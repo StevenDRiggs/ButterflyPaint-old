@@ -21,6 +21,7 @@ app.secret_key = os.urandom(24)
 app.config.from_pyfile('config.cfg')
 
 db.init_app(app)
+db.create_all(app=app)
 
 from bpaint import filters
 from bpaint.model import User
@@ -42,8 +43,8 @@ def load_user(user_id):
 
 #TODO: Register more blueprints like this
 # Check the blueprint folder for more info
-from bpaint.api.routes import api
-app.register_blueprint(api)
+from bpaint.api.routes.colors import colors_api
+app.register_blueprint(colors_api)
 
 #Sample App Context Function
 @app.context_processor
