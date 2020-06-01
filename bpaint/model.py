@@ -41,7 +41,8 @@ class Color(db.Model):
     recipe = db.relationship('Color',
             secondary='recipes',
             primaryjoin='colors.c.id==recipes.c.parent_color_id',
-            secondaryjoin='colors.c.id==recipes.c.ingredient_color_id'
+            secondaryjoin='colors.c.id==recipes.c.ingredient_color_id',
+            join_depth=1
     )
 
     def __repr__(self):
@@ -57,7 +58,7 @@ class Recipe(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f'<Recipe: {Color.query(Color.id == self.ingredient_color_id).first()} (x{self.quantity})'
+        return f'<Recipe: {Color.query(Color.id == self.ingredient_color_id).first().name} (x{self.quantity})'
 
 
 class Inventory(db.Model):

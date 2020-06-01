@@ -19,11 +19,16 @@ color_schema = ColorSchema(many=True)
 # @login_required
 def colors():
     colors = Color.query.all()
-    return color_schema.jsonify(colors)
+    print(colors)
+    cs = color_schema.dumps(colors)
+    print(cs)
+    return cs
         
 
 @colors_api.route('/<int:id>')
 # @login_required
 def show_color(id):
     color = Color.query.filter(Color.id == id)
-    return color_schema.jsonify(color)
+    cs = color_schema.dumps(color)
+    print(cs)
+    return cs
