@@ -14,25 +14,28 @@ ma = Marshmallow(app)
 
 # Sample Marshmallow Schemas, us this method to make yours
 
-class UserSchema(ma.SQLAlchemySchema):
+class UserSchema(ma.SQLAlchemyAutoSchema):
    class Meta:
         model = User
         load_instance = True
 
 
-class ColorSchema(ma.SQLAlchemySchema):
+class ColorSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Color
         load_instance = True
+        include_relationships = True
 
 
-class RecipeSchema(ma.SQLAlchemySchema):
+class RecipeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Recipe
         load_instance = True
+        include_fk = True
 
 
-class InventorySchema(ma.SQLAlchemySchema):
+class InventoryAutoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Inventory
         load_instance = True
+        include_fk = True
