@@ -11,6 +11,9 @@ import os
 
 from bpaint.model import db
 
+# for testing with dummy data
+from flask_seeder import FlaskSeeder
+
 #instance of app
 app = Flask(__name__)
 
@@ -22,6 +25,10 @@ app.config.from_pyfile('config.cfg')
 
 db.init_app(app)
 db.create_all(app=app)
+
+# init seed capability
+seeder = FlaskSeeder()
+seeder.init_app(app, db)
 
 from bpaint import filters
 from bpaint.model import User

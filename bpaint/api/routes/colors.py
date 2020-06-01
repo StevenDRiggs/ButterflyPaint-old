@@ -21,3 +21,9 @@ def colors():
     colors = Color.query.all()
     return color_schema.jsonify(colors)
         
+
+@colors_api.route('/<int:id>')
+# @login_required
+def show_color(id):
+    color = Color.query.filter(Color.id == id)
+    return color_schema.jsonify(color)
