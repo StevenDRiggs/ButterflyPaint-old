@@ -32,7 +32,7 @@ seeder.init_app(app, db)
 
 from bpaint import filters
 from bpaint.model import User
-from bpaint.methods import do_login
+from bpaint.methods import try_login
 
 #Flask Login Setup
 LOGINMANAGER = LoginManager()
@@ -65,8 +65,8 @@ def app_wide_variables():
     return dict()
 
 #Sample Index Route or Login Route
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     '''
     Index function takes no argument,
     routes to the '/' page and holds the login logic.
@@ -74,9 +74,9 @@ def index():
     if current_user.is_authenticated:
         return redirect(url_for('protected_route'))
     if request.method == 'POST':
-        user = request.form.get('user')
+        user = request.form.get('username_or_email')
         password = request.form.get('password')
-        if do_login(user, password):
+        if try_login(user, password):
             if 'next' in request.args:
                 return redirect(request.args['next'])
             return redirect(url_for('protected'))

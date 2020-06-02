@@ -9,14 +9,14 @@ class UserSeeder(Seeder):
                 cls=User,
                 init={
                     'id': generator.Sequence(),
-                    'name': generator.String('\c{15}'),
-                    'email': generator.String('\c{6}@email.com'),
+                    'username': generator.String(f'user\d{2}\c'),
+                    'email': generator.String(f'user\d{2}\c@email.com'),
                     'password': generator.String('password'),
                 }
         )
 
         for user in faker.create(10):
-            print(f'Adding user {user.name}.')
+            print(f'Adding user {user.username}.')
             self.db.session.add(user)
 
 class ColorSeeder(Seeder):
