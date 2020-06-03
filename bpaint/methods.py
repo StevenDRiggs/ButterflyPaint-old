@@ -1,6 +1,3 @@
-from sqlalchemy import or_
-
-
 '''
 METHODS
 --------------
@@ -13,12 +10,10 @@ from bpaint import login_user
 
 #EXAMPLE METHOD
 def try_login(username_or_email, password):
-    user = User.query.filter(or_(
-        User.username == username_or_email,
-        User.email == username_or_email
-    )).one()
+    users = User.query.all()
+    user = next(filter(lambda u: u.username == username_or_email or u.email == username_or_email, users))
     if user and user.is_verified(password):
-        return True
+        return login_user(user)
     return False
 
 def returnTrue():

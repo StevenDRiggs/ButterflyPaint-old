@@ -37,7 +37,7 @@ from bpaint.methods import try_login
 #Flask Login Setup
 LOGINMANAGER = LoginManager()
 LOGINMANAGER.init_app(app)
-LOGINMANAGER.login_view = 'index'
+LOGINMANAGER.login_view = 'login'
 
 #Loading Users to Flask-Login
 @LOGINMANAGER.user_loader
@@ -64,33 +64,24 @@ def app_wide_variables():
     '''
     return dict()
 
-#Sample Index Route or Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    '''
-    Index function takes no argument,
-    routes to the '/' page and holds the login logic.
-    '''
     if current_user.is_authenticated:
-        return redirect(url_for('protected_route'))
+        return redirect(url_for('index'))
     if request.method == 'POST':
         user = request.form.get('username_or_email')
         password = request.form.get('password')
         if try_login(user, password):
             if 'next' in request.args:
                 return redirect(request.args['next'])
-            return redirect(url_for('protected'))
+            return redirect(url_for('index'))
         flash('Invalid Login Details!')
     return render_template("login.html")
 
-#Sample protected route
-@app.route('/protected-route')
+@app.route('/index')
 @login_required
-def protected_route():
-    '''
-    Sample protected route, change it to your test
-    '''
-    return render_template('protected.html')
+def index():
+    return render_template('index.html')
 
 
 #Sample Logout Route
@@ -98,7 +89,7 @@ def protected_route():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('protected_route'))
+    return redirect(url_for('/'))
 
 #Sample 404 error page
 @app.errorhandler(404)
